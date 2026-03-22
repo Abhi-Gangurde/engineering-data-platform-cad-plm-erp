@@ -347,7 +347,7 @@ Created optimized tables for BI:
 ##  Author
 
 **Abhishek G**
-Data Engineering | SDET Background
+Data Engineering
 
 ---
 
