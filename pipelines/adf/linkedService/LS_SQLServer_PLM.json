@@ -1,0 +1,27 @@
+{
+	"name": "LS_SQLServer_PLM",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"server": "DESKTOP-HFG9J5N\\SQLEXPRESS",
+			"database": "PLM",
+			"encrypt": "False",
+			"trustServerCertificate": false,
+			"authenticationType": "Windows",
+			"userName": "abhigangurd",
+			"integratedSecurity": "True",
+			"pooling": "False",
+			"multipleActiveResultSets": "False",
+			"connectTimeout": "30",
+			"packetSize": "4096",
+			"commandTimeout": "0",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJmYTIzZTRiYy0zMTlkLTQwN2UtOGQ0Yy03YjRiZTFhNDRiMzYiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "IR-CAD-Metadata",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
