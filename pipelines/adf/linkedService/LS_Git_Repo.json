@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "HttpServer",
 		"typeProperties": {
-			"url": "https://raw.githubusercontent.com/Abhi-Gangurde/engineering-data-platform-cad-plm-erp/refs/heads/main/data/cad/",
+			"url": "https://raw.githubusercontent.com/",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
