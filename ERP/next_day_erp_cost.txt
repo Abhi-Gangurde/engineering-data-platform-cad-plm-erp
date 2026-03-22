@@ -1,0 +1,3 @@
+part_id,supplier_name,cost,currency,last_updated
+P1001,Tata Components,1550,INR,2026-03-15 09:00:00
+P1006,New Vendor Ltd,900,INR,2026-03-15 09:30:00
