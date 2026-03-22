@@ -1,0 +1,21 @@
+{
+	"name": "pipeline_metadata",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"server": "DESKTOP-HFG9J5N\\SQLEXPRESS",
+			"database": "pipeline_metadata",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "Windows",
+			"userName": "abhigangurd",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI1YzhlMjAzMC0yOWM1LTRhOTYtYmY1MC03ODM0NWRlMmNjYzciLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "IR-CAD-Metadata",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
