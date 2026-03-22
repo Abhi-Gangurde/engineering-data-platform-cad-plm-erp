@@ -24,6 +24,8 @@ Engineering and manufacturing organizations generate data across multiple system
 * **PLM** → Bill of Materials (BOM), revisions
 * **ERP** → Cost, supplier, financial data
 
+<img src="docs/Sources.png" alt="Architecture " width=""/>
+
 👉 These systems are siloed, making it difficult to:
 
 * Analyze product cost
@@ -90,6 +92,9 @@ ERP (DB)   ──► ADF (Incremental Load)
 
 ##  Data Ingestion Strategy
 
+<img src="docs/Ingestion.png" alt="Architecture " width=""/>
+
+
 | Source | Method                       | Trigger             |
 | ------ | ---------------------------- | ------------------- |
 | CAD    | File-based batch (CSV)       | Event Trigger       |
@@ -120,6 +125,8 @@ ERP (DB)   ──► ADF (Incremental Load)
   * Schema standardization
 * Prepares data for modeling
 
+<img src="docs/BronzeToSilver.png" alt="Architecture " width=""/>
+
 ---
 
 ###  Gold Layer (Business Model)
@@ -137,6 +144,9 @@ ERP (DB)   ──► ADF (Incremental Load)
 * `fact_bom`
 * `fact_cost`
 
+
+<img src="docs/SilverToGold.png" alt="Architecture " width=""/>
+
 ---
 
 ##  Orchestration (ADF Pipelines)
@@ -147,6 +157,8 @@ ERP (DB)   ──► ADF (Incremental Load)
 * `PL_PLM_CDC_Ingestion`
 * `PL_ERP_Incremental`
 * `PL_MASTER_PIPELINE`
+* 
+<img src="docs/ChildPipelines.png" alt="Architecture " width=""/>
 
 ---
 
@@ -156,6 +168,8 @@ ERP (DB)   ──► ADF (Incremental Load)
 * Waits until all pipelines succeed
 * Triggers Databricks notebook
 * Updates execution status
+
+<img src="docs/MasterPipeline.png" alt="Architecture " width=""/>
 
 ---
 
