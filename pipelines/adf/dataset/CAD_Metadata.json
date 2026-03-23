@@ -5,11 +5,6 @@
 			"referenceName": "LS_OnPrem_CAD_Metadata",
 			"type": "LinkedServiceReference"
 		},
-		"parameters": {
-			"p_file_name": {
-				"type": "string"
-			}
-		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
