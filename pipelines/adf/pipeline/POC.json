@@ -68,7 +68,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('FilterTheCsvFile').output.Value.name",
+						"value": "@activity('FilterTheCsvFile').output.Value",
 						"type": "Expression"
 					},
 					"activities": [
@@ -90,6 +90,7 @@
 									"storeSettings": {
 										"type": "FileServerReadSettings",
 										"recursive": true,
+										"wildcardFileName": "*",
 										"enablePartitionDiscovery": false
 									},
 									"formatSettings": {
@@ -99,7 +100,8 @@
 								"sink": {
 									"type": "DelimitedTextSink",
 									"storeSettings": {
-										"type": "AzureBlobFSWriteSettings"
+										"type": "AzureBlobFSWriteSettings",
+										"copyBehavior": "PreserveHierarchy"
 									},
 									"formatSettings": {
 										"type": "DelimitedTextWriteSettings",
@@ -122,7 +124,10 @@
 									"referenceName": "CAD_Metadata",
 									"type": "DatasetReference",
 									"parameters": {
-										"Filename": "@dataset().Filename"
+										"Filename": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
 									}
 								}
 							],
