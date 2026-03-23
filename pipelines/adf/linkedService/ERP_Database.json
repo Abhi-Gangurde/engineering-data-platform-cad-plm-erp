@@ -1,0 +1,17 @@
+{
+	"name": "ERP_Database",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"server": "servererpsqldb.database.windows.net",
+			"database": "SQL_DB_ERP_free-sql-db-9493379",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "SQL",
+			"userName": "servererpsqldb ",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDI4NUVBNUY3LUJDNTEtNEM4MC04RERFLUJEMTdBNEQxNTFGOV81Y2ZhYjYxZS03ZTZkLTRiZDgtYWQ4OS01MmFkZTZmNDMwYWQiDQp9"
+		}
+	}
+}

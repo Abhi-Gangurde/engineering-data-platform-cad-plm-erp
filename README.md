@@ -1,3 +1,5 @@
+[View the live project blueprint](https://htmlpreview.github.io/?https://raw.githubusercontent.com/Abhi-Gangurde/engineering-data-platform-cad-plm-erp/refs/heads/main/cad-plm-erp-architecture.html)
+
 # engineering-data-platform-cad-plm-erp
 End-to-End Data Engineering Platform using ADF, Databricks, and Delta Lake  integrating CAD, PLM, and ERP systems with CDC, incremental processing, and medallion architecture.
 

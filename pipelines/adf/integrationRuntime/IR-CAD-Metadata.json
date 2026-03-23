@@ -1,0 +1,9 @@
+{
+	"name": "IR-CAD-Metadata",
+	"properties": {
+		"type": "SelfHosted",
+		"typeProperties": {
+			"selfContainedInteractiveAuthoringEnabled": true
+		}
+	}
+}

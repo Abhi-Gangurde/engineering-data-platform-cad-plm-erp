@@ -1,0 +1,28 @@
+{
+	"name": "TRG_STG_Event_CAD_Metadata",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "PL_CAD_Metadata_Ingesion",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"file_name": "cad_metadata_2026_03_21"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/bronze/blobs/cad/raw/",
+			"blobPathEndsWith": "csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/52bcdd3d-a8ab-451a-b060-4eff9121b76c/resourceGroups/rg-engdata-platform-dev/providers/Microsoft.Storage/storageAccounts/stengdataplatformdev",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CAD · PLM · ERP — Engineering Data Platform Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #111827;
+    --bg3: #1a2235;
+    --border: #1e2d45;
+    --border2: #2a3f5f;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --accent: #38bdf8;
+    --accent2: #0ea5e9;
+    --green: #34d399;
+    --orange: #fb923c;
+    --purple: #a78bfa;
+    --pink: #f472b6;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --bronze: #cd7f32;
+    --silver: #94a3b8;
+    --gold: #fbbf24;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 32px 24px 64px;
+    min-width: 1100px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    position: relative;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -32px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 200px;
+    background: radial-gradient(ellipse at center, rgba(56,189,248,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(56,189,248,0.3);
+    padding: 4px 14px;
+    border-radius: 2px;
+    margin-bottom: 16px;
+    background: rgba(56,189,248,0.05);
+  }
+  h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  h1 span { color: var(--accent); }
+  .header-sub {
+    color: var(--text2);
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 12px;
+    padding-left: 4px;
+  }
+
+  /* ── CARDS / PANELS ── */
+  .panel {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    border-radius: 8px 8px 0 0;
+  }
+  .panel.accent-blue::before  { background: linear-gradient(90deg, var(--accent2), var(--accent)); }
+  .panel.accent-green::before { background: linear-gradient(90deg, #059669, var(--green)); }
+  .panel.accent-bronze::before{ background: linear-gradient(90deg, #92400e, var(--bronze)); }
+  .panel.accent-silver::before{ background: linear-gradient(90deg, #475569, var(--silver)); }
+  .panel.accent-gold::before  { background: linear-gradient(90deg, #d97706, var(--gold)); }
+  .panel.accent-purple::before{ background: linear-gradient(90deg, #6d28d9, var(--purple)); }
+  .panel.accent-pink::before  { background: linear-gradient(90deg, #be185d, var(--pink)); }
+  .panel.accent-orange::before{ background: linear-gradient(90deg, #c2410c, var(--orange)); }
+
+  .panel-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── GRID LAYOUTS ── */
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+  /* ── FLOW CONNECTOR ── */
+  .flow-arrow {
+    text-align: center;
+    padding: 10px 0;
+    position: relative;
+  }
+  .flow-arrow::before {
+    content: '';
+    position: absolute;
+    left: 50%; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--border2), transparent);
+  }
+  .flow-arrow svg {
+    background: var(--bg);
+    position: relative;
+    z-index: 1;
+    padding: 0 4px;
+  }
+
+  /* ── SOURCE SYSTEM CARD ── */
+  .source-card {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 14px;
+  }
+  .source-card .title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .source-card .subtitle {
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 10px;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .tag {
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    padding: 2px 7px;
+    border-radius: 3px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .tag.blue   { color: var(--accent);  border-color: rgba(56,189,248,0.3); background: rgba(56,189,248,0.05); }
+  .tag.green  { color: var(--green);   border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.05); }
+  .tag.orange { color: var(--orange);  border-color: rgba(251,146,60,0.3); background: rgba(251,146,60,0.05); }
+  .tag.purple { color: var(--purple);  border-color: rgba(167,139,250,0.3); background: rgba(167,139,250,0.05); }
+  .tag.yellow { color: var(--yellow);  border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.05); }
+  .tag.pink   { color: var(--pink);    border-color: rgba(244,114,182,0.3); background: rgba(244,114,182,0.05); }
+  .tag.bronze { color: var(--bronze);  border-color: rgba(205,127,50,0.3); background: rgba(205,127,50,0.05); }
+  .tag.silver { color: var(--silver);  border-color: rgba(148,163,184,0.3); background: rgba(148,163,184,0.05); }
+  .tag.gold-t { color: var(--gold);    border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.05); }
+  .tag.red    { color: var(--red);     border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.05); }
+
+  /* ── INGEST BADGE ── */
+  .ingest-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-top: 8px;
+  }
+
+  /* ── PIPELINE TABLE ── */
+  .pipeline-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    margin-bottom: 8px;
+    transition: border-color 0.2s;
+  }
+  .pipeline-row:hover { border-color: var(--border2); }
+  .pipeline-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    flex: 0 0 200px;
+  }
+  .pipeline-desc {
+    font-size: 12px;
+    color: var(--text2);
+    flex: 1;
+  }
+  .pipeline-trigger {
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ── TABLE CARD ── */
+  .table-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .table-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .col-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text2);
+  }
+  .col-row:last-child { border-bottom: none; }
+  .col-pk {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 2px;
+    background: rgba(56,189,248,0.15);
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    flex-shrink: 0;
+  }
+  .col-fk {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 2px;
+    background: rgba(167,139,250,0.15);
+    color: var(--purple);
+    font-family: 'Space Mono', monospace;
+    flex-shrink: 0;
+  }
+  .col-scd {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 2px;
+    background: rgba(251,191,36,0.15);
+    color: var(--yellow);
+    font-family: 'Space Mono', monospace;
+    flex-shrink: 0;
+  }
+  .col-name { flex: 1; }
+  .col-type { color: var(--text3); font-size: 10px; font-family: 'Space Mono', monospace; }
+
+  /* ── LAYER STRIP ── */
+  .layer-strip {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .layer-left {
+    width: 120px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    gap: 4px;
+  }
+  .layer-right {
+    flex: 1;
+    padding: 12px 16px;
+    border-left: 1px solid var(--border);
+    background: var(--bg3);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+  }
+  .layer-desc { font-size: 11px; color: var(--text2); }
+  .layer-tables { display: flex; flex-wrap: wrap; gap: 5px; }
+
+  /* ── METADATA STRUCTURE ── */
+  .meta-folder {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .meta-folder-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--yellow);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .meta-file {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    padding: 2px 0 2px 18px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .meta-file::before { content: '└─'; color: var(--border2); }
+
+  /* ── STEP LIST ── */
+  .step-list { list-style: none; }
+  .step-item {
+    display: flex;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+  .step-item:last-child { border-bottom: none; }
+  .step-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    background: rgba(56,189,248,0.1);
+    border: 1px solid rgba(56,189,248,0.2);
+    border-radius: 3px;
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-content {}
+  .step-title { font-size: 12px; font-weight: 500; margin-bottom: 2px; }
+  .step-detail { font-size: 11px; color: var(--text3); }
+
+  /* ── HORIZONTAL RULE ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+
+  /* ── TOP LAYER BADGE ── */
+  .cross-layer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg3);
+    border: 1px dashed var(--border2);
+    border-radius: 6px;
+    padding: 10px 16px;
+    margin-bottom: 10px;
+  }
+  .cross-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .cross-content {}
+  .cross-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .cross-desc { font-size: 11px; color: var(--text3); }
+
+  /* ── KEY DECISIONS ── */
+  .decision-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-left: 3px solid;
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+  }
+  .decision-q {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .decision-a {
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  /* ── RESPONSIVE SPACERS ── */
+  .mb8  { margin-bottom: 8px; }
+  .mb12 { margin-bottom: 12px; }
+  .mb16 { margin-bottom: 16px; }
+  .mb24 { margin-bottom: 24px; }
+  .mb32 { margin-bottom: 32px; }
+  .mt8  { margin-top: 8px; }
+  .mt16 { margin-top: 16px; }
+  .mt24 { margin-top: 24px; }
+
+  /* ── BADGE STRIP ── */
+  .badge-strip {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  /* ── ICON ── */
+  .icon { font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════════════ -->
+<div class="header">
+  <div class="header-badge">Architecture Blueprint · v1.0</div>
+  <h1>Engineering Data Platform<br/><span>CAD · PLM · ERP</span></h1>
+  <p class="header-sub">End-to-end Data Engineering Pipeline — Medallion Architecture on Azure</p>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 1 — SOURCE SYSTEMS
+══════════════════════════════════════════════════════ -->
+<div class="section-label">01 — Source Systems (Read-Only)</div>
+
+<div class="grid-3 mb24">
+
+  <!-- CAD -->
+  <div class="panel accent-blue">
+    <div class="panel-title">
+      <div class="dot" style="background:var(--accent)"></div>
+      <span style="color:var(--accent)">CAD System</span>
+      <span style="color:var(--text3); font-weight:400; font-size:10px; margin-left:auto">e.g. SolidWorks</span>
+    </div>
+    <div class="source-card mb8">
+      <div class="title" style="color:var(--accent)">📐 Design Metadata</div>
+      <div class="subtitle">File-based exports (CSV / JSON)</div>
+      <div class="tag-list">
+        <span class="tag blue">part_id</span>
+        <span class="tag blue">part_name</span>
+        <span class="tag blue">material</span>
+        <span class="tag blue">weight_kg</span>
+        <span class="tag blue">designer</span>
+        <span class="tag blue">created_date</span>
+      </div>
+    </div>
+    <div class="source-card">
+      <div class="title" style="color:var(--text2)">📁 File Format</div>
+      <div class="tag-list">
+        <span class="tag blue">.csv</span>
+        <span class="tag blue">.json</span>
+        <span class="tag blue">cad_metadata_YYYY_MM_DD.csv</span>
+      </div>
+    </div>
+    <div style="margin-top:10px">
+      <div class="ingest-badge" style="background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); color:var(--accent)">
+        ⚡ Ingestion: File-Based Batch
+      </div>
+    </div>
+  </div>
+
+  <!-- PLM -->
+  <div class="panel accent-purple">
+    <div class="panel-title">
+      <div class="dot" style="background:var(--purple)"></div>
+      <span style="color:var(--purple)">PLM System</span>
+      <span style="color:var(--text3); font-weight:400; font-size:10px; margin-left:auto">e.g. Teamcenter</span>
+    </div>
+    <div class="source-card mb8">
+      <div class="title" style="color:var(--purple)">🔩 BOM Table (plm_bom)</div>
+      <div class="tag-list">
+        <span class="tag purple">assembly_id</span>
+        <span class="tag purple">part_id</span>
+        <span class="tag purple">quantity</span>
+        <span class="tag purple">last_modified</span>
+      </div>
+    </div>
+    <div class="source-card">
+      <div class="title" style="color:var(--purple)">🔁 Revisions (plm_revisions)</div>
+      <div class="tag-list">
+        <span class="tag purple">part_id</span>
+        <span class="tag purple">revision</span>
+        <span class="tag purple">status</span>
+        <span class="tag purple">effective_from</span>
+        <span class="tag purple">effective_to</span>
+        <span class="tag purple">last_modified</span>
+      </div>
+    </div>
+    <div style="margin-top:10px">
+      <div class="ingest-badge" style="background:rgba(167,139,250,0.08); border:1px solid rgba(167,139,250,0.25); color:var(--purple)">
+        ⚡ Ingestion: SQL Server CDC
+      </div>
+    </div>
+  </div>
+
+  <!-- ERP -->
+  <div class="panel accent-orange">
+    <div class="panel-title">
+      <div class="dot" style="background:var(--orange)"></div>
+      <span style="color:var(--orange)">ERP System</span>
+      <span style="color:var(--text3); font-weight:400; font-size:10px; margin-left:auto">SQL Server / SAP</span>
+    </div>
+    <div class="source-card mb8">
+      <div class="title" style="color:var(--orange)">💰 Cost Table (erp_cost)</div>
+      <div class="tag-list">
+        <span class="tag orange">part_id</span>
+        <span class="tag orange">supplier_name</span>
+        <span class="tag orange">cost</span>
+        <span class="tag orange">currency</span>
+        <span class="tag orange">last_updated</span>
+      </div>
+    </div>
+    <div class="source-card">
+      <div class="title" style="color:var(--text2)">📦 Read-Only Constraint</div>
+      <div class="tag-list">
+        <span class="tag orange">Watermark-based</span>
+        <span class="tag orange">last_updated &gt; checkpoint</span>
+      </div>
+    </div>
+    <div style="margin-top:10px">
+      <div class="ingest-badge" style="background:rgba(251,146,60,0.08); border:1px solid rgba(251,146,60,0.25); color:var(--orange)">
+        ⚡ Ingestion: Incremental Load
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 2 — ADF INGESTION PIPELINES
+══════════════════════════════════════════════════════ -->
+<div class="section-label">02 — Azure Data Factory — Ingestion Pipelines</div>
+
+<div class="panel accent-blue mb24">
+  <div class="panel-title">
+    <div class="dot" style="background:var(--accent)"></div>
+    ADF Pipeline Catalogue
+  </div>
+
+  <!-- CAD Pipeline -->
+  <div class="pipeline-row mb8">
+    <div style="font-size:16px">📄</div>
+    <div class="pipeline-name">PL_CAD_Metadata</div>
+    <div class="pipeline-desc">
+      <strong style="color:var(--text)">Event Trigger</strong> → File arrives in <code style="color:var(--accent); font-size:10px">cad/raw/</code> →
+      Validate → Check file_tracking (ADLS) → Copy to Bronze → Update metadata
+    </div>
+    <div class="pipeline-trigger"><span class="tag blue">Event Trigger</span></div>
+  </div>
+
+  <!-- PLM Pipeline -->
+  <div class="pipeline-row mb8">
+    <div style="font-size:16px">🔄</div>
+    <div class="pipeline-name">PL_PLM_CDC_Ingestion</div>
+    <div class="pipeline-desc">
+      <strong style="color:var(--text)">Schedule Trigger (every 15 min)</strong> → Read CDC tables
+      <code style="color:var(--purple); font-size:10px">cdc.dbo_bom_CT</code> → Filter by LSN → Load to Bronze → Update LSN checkpoint
+    </div>
+    <div class="pipeline-trigger"><span class="tag purple">Schedule Trigger</span></div>
+  </div>
+
+  <!-- ERP Pipeline -->
+  <div class="pipeline-row mb8">
+    <div style="font-size:16px">💹</div>
+    <div class="pipeline-name">PL_ERP_Incremental</div>
+    <div class="pipeline-desc">
+      <strong style="color:var(--text)">Schedule Trigger (Hourly)</strong> → Read watermark from ADLS →
+      Query ERP <code style="color:var(--orange); font-size:10px">WHERE last_updated &gt; @watermark</code> → Bronze → Update watermark
+    </div>
+    <div class="pipeline-trigger"><span class="tag orange">Hourly Schedule</span></div>
+  </div>
+
+  <!-- Master Pipeline -->
+  <div class="pipeline-row" style="border-color:rgba(52,211,153,0.3)">
+    <div style="font-size:16px">🎯</div>
+    <div class="pipeline-name" style="color:var(--green)">PL_MASTER_PIPELINE</div>
+    <div class="pipeline-desc">
+      <strong style="color:var(--text)">Schedule / Dependency-based</strong> → Lookup pipeline_status (ADLS) →
+      UNTIL all 3 = SUCCESS → Trigger Databricks Notebook → Update master status
+    </div>
+    <div class="pipeline-trigger"><span class="tag green">Dependency</span></div>
+  </div>
+
+  <!-- Master Pipeline Steps -->
+  <div style="margin-top:16px; padding:14px; background:var(--bg); border-radius:6px; border:1px solid var(--border)">
+    <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--text3); margin-bottom:10px; text-transform:uppercase; letter-spacing:1px">Master Pipeline — Internal Flow</div>
+    <div style="display:flex; gap:0; flex-wrap:wrap; align-items:center">
+      <div style="text-align:center; padding:6px 10px; background:var(--bg3); border:1px solid var(--border2); border-radius:4px; font-size:10px; font-family:'Space Mono',monospace; color:var(--accent)">Trigger<br/>(15min)</div>
+      <div style="padding:0 4px; color:var(--border2)">→</div>
+      <div style="text-align:center; padding:6px 10px; background:var(--bg3); border:1px solid var(--border2); border-radius:4px; font-size:10px; font-family:'Space Mono',monospace; color:var(--text2)">Lookup<br/>Status</div>
+      <div style="padding:0 4px; color:var(--border2)">→</div>
+      <div style="text-align:center; padding:6px 10px; background:var(--bg3); border:1px solid rgba(251,191,36,0.3); border-radius:4px; font-size:10px; font-family:'Space Mono',monospace; color:var(--yellow)">IF All<br/>SUCCESS?</div>
+      <div style="padding:0 4px; color:var(--border2)">→</div>
+      <div style="text-align:center; padding:6px 10px; background:var(--bg3); border:1px solid rgba(52,211,153,0.3); border-radius:4px; font-size:10px; font-family:'Space Mono',monospace; color:var(--green)">Run<br/>Databricks</div>
+      <div style="padding:0 4px; color:var(--border2)">→</div>
+      <div style="text-align:center; padding:6px 10px; background:var(--bg3); border:1px solid var(--border2); border-radius:4px; font-size:10px; font-family:'Space Mono',monospace; color:var(--text2)">Update<br/>Status</div>
+      <div style="padding:0 4px; color:var(--border2)">→</div>
+      <div style="text-align:center; padding:6px 10px; background:var(--bg3); border:1px solid rgba(248,113,113,0.2); border-radius:4px; font-size:10px; font-family:'Space Mono',monospace; color:var(--red)">FALSE:<br/>Wait 5min</div>
+      <div style="padding:0 4px; color:var(--text3); font-size:10px">↩ retry</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 3 — MEDALLION ARCHITECTURE (ADLS Gen2)
+══════════════════════════════════════════════════════ -->
+<div class="section-label">03 — ADLS Gen2 — Medallion Architecture</div>
+
+<!-- BRONZE -->
+<div class="layer-strip mb8">
+  <div class="layer-left" style="background:rgba(205,127,50,0.08); border-right:none">
+    <div style="font-size:22px">🥉</div>
+    <div style="color:var(--bronze); letter-spacing:1px">BRONZE</div>
+    <div style="color:var(--text3); font-size:9px; font-weight:400; margin-top:2px">Raw / Immutable</div>
+  </div>
+  <div class="layer-right" style="border-left-color:rgba(205,127,50,0.3)">
+    <div class="layer-desc">Raw data stored as-is from all three sources. No transformations applied. Audit columns added by ADF.</div>
+    <div class="layer-tables">
+      <span class="tag bronze">cad_metadata_raw</span>
+      <span class="tag bronze">plm_bom_cdc_raw</span>
+      <span class="tag bronze">plm_revision_cdc_raw</span>
+      <span class="tag bronze">erp_cost_incremental_raw</span>
+    </div>
+    <div class="layer-tables" style="margin-top:4px">
+      <span style="font-size:10px; color:var(--text3)">+ Metadata columns:</span>
+      <span class="tag bronze">ingestion_time</span>
+      <span class="tag bronze">source_system</span>
+      <span class="tag bronze">batch_id</span>
+      <span class="tag bronze">file_name</span>
+    </div>
+  </div>
+</div>
+
+<!-- SILVER -->
+<div class="layer-strip mb8">
+  <div class="layer-left" style="background:rgba(148,163,184,0.08)">
+    <div style="font-size:22px">🥈</div>
+    <div style="color:var(--silver); letter-spacing:1px">SILVER</div>
+    <div style="color:var(--text3); font-size:9px; font-weight:400; margin-top:2px">Cleaned / Standardized</div>
+  </div>
+  <div class="layer-right" style="border-left-color:rgba(148,163,184,0.3)">
+    <div class="layer-desc">Databricks (PySpark) applies cleaning: null handling, deduplication, type casting, CDC merge logic, unit normalization, surrogate key generation.</div>
+    <div class="layer-tables">
+      <span class="tag silver">parts_clean</span>
+      <span class="tag silver">bom_clean</span>
+      <span class="tag silver">revisions_clean</span>
+      <span class="tag silver">cost_clean</span>
+    </div>
+    <div class="layer-tables" style="margin-top:4px">
+      <span style="font-size:10px; color:var(--text3)">Transformations:</span>
+      <span class="tag silver">Null handling</span>
+      <span class="tag silver">Deduplication</span>
+      <span class="tag silver">Schema enforce</span>
+      <span class="tag silver">CDC MERGE</span>
+      <span class="tag silver">Incremental MERGE</span>
+    </div>
+  </div>
+</div>
+
+<!-- GOLD -->
+<div class="layer-strip mb8">
+  <div class="layer-left" style="background:rgba(251,191,36,0.08)">
+    <div style="font-size:22px">🥇</div>
+    <div style="color:var(--gold); letter-spacing:1px">GOLD</div>
+    <div style="color:var(--text3); font-size:9px; font-weight:400; margin-top:2px">Star Schema</div>
+  </div>
+  <div class="layer-right" style="border-left-color:rgba(251,191,36,0.3)">
+    <div class="layer-desc">Business-ready Fact & Dimension tables. Star schema modeled for analytical queries. SCD Type 2 on revisions. Optimized with partitioning and Z-ordering.</div>
+    <div class="layer-tables">
+      <span class="tag gold-t">dim_part</span>
+      <span class="tag gold-t">dim_assembly</span>
+      <span class="tag gold-t">dim_supplier</span>
+      <span class="tag gold-t">dim_revision (SCD2)</span>
+      <span class="tag gold-t">dim_date</span>
+    </div>
+    <div class="layer-tables" style="margin-top:4px">
+      <span class="tag gold-t">fact_bom</span>
+      <span class="tag gold-t">fact_cost</span>
+      <span class="tag gold-t">fact_design</span>
+    </div>
+  </div>
+</div>
+
+<!-- SERVING -->
+<div class="layer-strip mb24">
+  <div class="layer-left" style="background:rgba(52,211,153,0.08)">
+    <div style="font-size:22px">📊</div>
+    <div style="color:var(--green); letter-spacing:1px">SERVING</div>
+    <div style="color:var(--text3); font-size:9px; font-weight:400; margin-top:2px">BI-Optimized</div>
+  </div>
+  <div class="layer-right" style="border-left-color:rgba(52,211,153,0.3)">
+    <div class="layer-desc">Aggregated, denormalized tables for Power BI / Tableau. Pre-computed KPIs. Row-level security applied. Materialized views for performance.</div>
+    <div class="layer-tables">
+      <span class="tag green">assembly_cost_summary</span>
+      <span class="tag green">part_cost_view</span>
+      <span class="tag green">supplier_performance</span>
+      <span class="tag green">revision_impact_view</span>
+    </div>
+    <div class="layer-tables" style="margin-top:4px">
+      <span style="font-size:10px; color:var(--text3)">Optimizations:</span>
+      <span class="tag green">Pre-aggregations</span>
+      <span class="tag green">RLS Security</span>
+      <span class="tag green">Partitioned by date</span>
+      <span class="tag green">Column masking</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 4 — STAR SCHEMA
+══════════════════════════════════════════════════════ -->
+<div class="section-label">04 — Gold Layer — Star Schema Design</div>
+
+<div class="grid-3 mb24">
+
+  <!-- DIMENSIONS -->
+  <div>
+    <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--text3); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px">Dimension Tables</div>
+
+    <div class="table-card">
+      <div class="table-name" style="color:var(--accent)">dim_part <span style="color:var(--text3); font-weight:400; font-size:9px">(CAD)</span></div>
+      <div class="col-row"><span class="col-pk">PK</span><span class="col-name">part_key</span><span class="col-type">INT</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">part_id</span><span class="col-type">VARCHAR</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">part_name</span><span class="col-type">VARCHAR</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">material</span><span class="col-type">VARCHAR</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">weight_kg</span><span class="col-type">DECIMAL</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">designer</span><span class="col-type">VARCHAR</span></div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-name" style="color:var(--purple)">dim_assembly <span style="color:var(--text3); font-weight:400; font-size:9px">(PLM)</span></div>
+      <div class="col-row"><span class="col-pk">PK</span><span class="col-name">assembly_key</span><span class="col-type">INT</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">assembly_id</span><span class="col-type">VARCHAR</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">assembly_name</span><span class="col-type">VARCHAR</span></div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-name" style="color:var(--orange)">dim_supplier <span style="color:var(--text3); font-weight:400; font-size:9px">(ERP)</span></div>
+      <div class="col-row"><span class="col-pk">PK</span><span class="col-name">supplier_key</span><span class="col-type">INT</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">supplier_name</span><span class="col-type">VARCHAR</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">location</span><span class="col-type">VARCHAR</span></div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-name" style="color:var(--yellow)">dim_revision <span style="color:var(--text3); font-weight:400; font-size:9px">(PLM · SCD2)</span></div>
+      <div class="col-row"><span class="col-pk">PK</span><span class="col-name">revision_key</span><span class="col-type">INT</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">part_id</span><span class="col-type">VARCHAR</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">revision</span><span class="col-type">VARCHAR</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">status</span><span class="col-type">VARCHAR</span></div>
+      <div class="col-row"><span class="col-scd">SCD</span><span class="col-name">effective_from</span><span class="col-type">DATE</span></div>
+      <div class="col-row"><span class="col-scd">SCD</span><span class="col-name">effective_to</span><span class="col-type">DATE</span></div>
+      <div class="col-row"><span class="col-scd">SCD</span><span class="col-name">is_current</span><span class="col-type">BOOL</span></div>
+    </div>
+  </div>
+
+  <!-- FACT TABLES -->
+  <div>
+    <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--text3); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px">Fact Tables</div>
+
+    <div class="table-card">
+      <div class="table-name" style="color:var(--green)">fact_bom <span style="color:var(--text3); font-weight:400; font-size:9px">(PLM — Core)</span></div>
+      <div class="col-row"><span class="col-fk">FK</span><span class="col-name">assembly_key</span><span class="col-type">INT</span></div>
+      <div class="col-row"><span class="col-fk">FK</span><span class="col-name">part_key</span><span class="col-type">INT</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">quantity</span><span class="col-type">INT</span></div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-name" style="color:var(--green)">fact_cost <span style="color:var(--text3); font-weight:400; font-size:9px">(ERP)</span></div>
+      <div class="col-row"><span class="col-fk">FK</span><span class="col-name">part_key</span><span class="col-type">INT</span></div>
+      <div class="col-row"><span class="col-fk">FK</span><span class="col-name">supplier_key</span><span class="col-type">INT</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">cost</span><span class="col-type">DECIMAL</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">currency</span><span class="col-type">VARCHAR</span></div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-name" style="color:var(--green)">fact_design <span style="color:var(--text3); font-weight:400; font-size:9px">(CAD + PLM)</span></div>
+      <div class="col-row"><span class="col-fk">FK</span><span class="col-name">part_key</span><span class="col-type">INT</span></div>
+      <div class="col-row"><span class="col-fk">FK</span><span class="col-name">revision_key</span><span class="col-type">INT</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">created_date</span><span class="col-type">DATE</span></div>
+      <div class="col-row"><span style="width:30px"></span><span class="col-name">weight_kg</span><span class="col-type">DECIMAL</span></div>
+    </div>
+
+    <div style="padding:12px; background:var(--bg3); border:1px dashed rgba(52,211,153,0.3); border-radius:6px; margin-top:4px">
+      <div style="font-size:10px; font-family:'Space Mono',monospace; color:var(--green); margin-bottom:8px">KEY JOIN LOGIC</div>
+      <div style="font-size:11px; color:var(--text3); line-height:1.8">
+        <span style="color:var(--accent)">part_id</span> → common key across all systems<br/>
+        fact_bom → dim_part <span style="color:var(--text3)">(CAD data)</span><br/>
+        fact_cost → dim_supplier <span style="color:var(--text3)">(ERP data)</span><br/>
+        fact_design → dim_revision <span style="color:var(--text3)">(PLM history)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCD TYPE 2 LOGIC -->
+  <div>
+    <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--text3); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px">SCD Type 2 — dim_revision</div>
+
+    <div style="padding:14px; background:var(--bg3); border:1px solid rgba(251,191,36,0.2); border-radius:6px; margin-bottom:10px">
+      <div style="font-size:10px; font-family:'Space Mono',monospace; color:var(--yellow); margin-bottom:10px">MERGE LOGIC (Delta Lake)</div>
+      <div style="font-size:11px; line-height:2; color:var(--text2)">
+        <span style="color:var(--text3)">WHEN MATCHED AND</span><br/>
+        &nbsp;&nbsp;revision changes<br/>
+        <span style="color:var(--yellow)">→ Expire old record</span><br/>
+        &nbsp;&nbsp;set effective_to = today<br/>
+        &nbsp;&nbsp;set is_current = FALSE<br/><br/>
+        <span style="color:var(--text3)">THEN INSERT new row</span><br/>
+        &nbsp;&nbsp;effective_from = today<br/>
+        &nbsp;&nbsp;effective_to = NULL<br/>
+        &nbsp;&nbsp;is_current = TRUE
+      </div>
+    </div>
+
+    <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--text3); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px">Silver → Gold Steps</div>
+    <ul class="step-list">
+      <li class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Identify Business Entities</div>
+          <div class="step-detail">Map silver tables to dim/fact structure</div>
+        </div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Generate Surrogate Keys</div>
+          <div class="step-detail">ROW_NUMBER() OVER() as part_key</div>
+        </div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Apply SCD Type 2</div>
+          <div class="step-detail">Delta MERGE on dim_revision</div>
+        </div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Build Fact Tables</div>
+          <div class="step-detail">JOIN parts + bom + cost on part_id</div>
+        </div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">Data Quality Checks</div>
+          <div class="step-detail">Nulls, duplicates, referential integrity</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 5 — ADLS FOLDER STRUCTURE
+══════════════════════════════════════════════════════ -->
+<div class="section-label">05 — ADLS Gen2 — Storage Structure</div>
+
+<div class="grid-4 mb24">
+
+  <div class="panel accent-bronze">
+    <div class="panel-title"><div class="dot" style="background:var(--bronze)"></div><span style="color:var(--bronze)">bronze/</span></div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 cad_metadata/</div>
+      <div class="meta-file" style="color:var(--text2)">year=2026/month=03/</div>
+    </div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 plm_bom_cdc/</div>
+      <div class="meta-file" style="color:var(--text2)">partition by date</div>
+    </div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 plm_revision_cdc/</div>
+    </div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 erp_cost_incremental/</div>
+    </div>
+  </div>
+
+  <div class="panel accent-silver">
+    <div class="panel-title"><div class="dot" style="background:var(--silver)"></div><span style="color:var(--silver)">silver/</span></div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 parts_clean/</div>
+    </div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 bom_clean/</div>
+    </div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 revisions_clean/</div>
+    </div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 cost_clean/</div>
+    </div>
+  </div>
+
+  <div class="panel accent-gold">
+    <div class="panel-title"><div class="dot" style="background:var(--gold)"></div><span style="color:var(--gold)">gold/</span></div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 dim_part/</div>
+    </div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 dim_assembly/</div>
+    </div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 dim_supplier/</div>
+    </div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 dim_revision/ <span class="tag gold-t" style="font-size:9px">SCD2</span></div>
+    </div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 fact_bom/ &nbsp; fact_cost/</div>
+    </div>
+  </div>
+
+  <div class="panel" style="border-color:rgba(251,191,36,0.2)">
+    <div class="panel-title"><div class="dot" style="background:var(--yellow)"></div><span style="color:var(--yellow)">metadata/</span></div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 pipeline_status/</div>
+      <div class="meta-file">cad/ plm/ erp/</div>
+      <div class="meta-file">run_&lt;runid&gt;.json</div>
+    </div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 file_tracking/</div>
+      <div class="meta-file">cad_file_tracking.parquet</div>
+    </div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 watermark/</div>
+      <div class="meta-file">erp_watermark.json</div>
+    </div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 cdc_tracking/</div>
+      <div class="meta-file">plm_lsn.json</div>
+    </div>
+    <div class="meta-folder">
+      <div class="meta-folder-name">📁 audit/ &nbsp; rejected/</div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 6 — CROSS-CUTTING LAYERS
+══════════════════════════════════════════════════════ -->
+<div class="section-label">06 — Cross-Cutting Layers</div>
+
+<div class="grid-2 mb24">
+
+  <!-- CONTROL & MONITORING -->
+  <div class="panel accent-green">
+    <div class="panel-title">
+      <div class="dot" style="background:var(--green)"></div>
+      <span style="color:var(--green)">Control &amp; Monitoring Layer</span>
+      <span style="color:var(--text3); font-size:10px; margin-left:auto">Sits ON TOP of entire pipeline</span>
+    </div>
+
+    <div class="cross-layer mb8">
+      <div class="cross-icon">🎛</div>
+      <div class="cross-content">
+        <div class="cross-title">Orchestration — ADF / Airflow</div>
+        <div class="cross-desc">Schedules all pipelines, manages execution order, triggers Databricks</div>
+      </div>
+    </div>
+    <div class="cross-layer mb8">
+      <div class="cross-icon">🔁</div>
+      <div class="cross-content">
+        <div class="cross-title">Retry &amp; Failure Handling</div>
+        <div class="cross-desc">Retry policy: 3 attempts · Timeout configured · Dead-letter storage</div>
+      </div>
+    </div>
+    <div class="cross-layer mb8">
+      <div class="cross-icon">📢</div>
+      <div class="cross-content">
+        <div class="cross-title">Alerts &amp; Notifications</div>
+        <div class="cross-desc">Email / Microsoft Teams webhook on pipeline failure or long-run</div>
+      </div>
+    </div>
+    <div class="cross-layer">
+      <div class="cross-icon">🪵</div>
+      <div class="cross-content">
+        <div class="cross-title">Logging Framework</div>
+        <div class="cross-desc">rows_processed · execution_time · error_message stored in metadata/</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- METADATA & GOVERNANCE -->
+  <div class="panel accent-pink">
+    <div class="panel-title">
+      <div class="dot" style="background:var(--pink)"></div>
+      <span style="color:var(--pink)">Metadata &amp; Governance Layer</span>
+      <span style="color:var(--text3); font-size:10px; margin-left:auto">Spans ALL layers</span>
+    </div>
+
+    <div class="cross-layer mb8">
+      <div class="cross-icon">💧</div>
+      <div class="cross-content">
+        <div class="cross-title">Watermark Table — ERP</div>
+        <div class="cross-desc">erp_watermark.json — tracks last_run_time for incremental loads</div>
+      </div>
+    </div>
+    <div class="cross-layer mb8">
+      <div class="cross-icon">🔍</div>
+      <div class="cross-content">
+        <div class="cross-title">CDC Tracking — PLM</div>
+        <div class="cross-desc">plm_lsn.json — tracks last_lsn per CDC table</div>
+      </div>
+    </div>
+    <div class="cross-layer mb8">
+      <div class="cross-icon">🗂</div>
+      <div class="cross-content">
+        <div class="cross-title">File Tracking — CAD</div>
+        <div class="cross-desc">cad_file_tracking.parquet — prevents duplicate file processing</div>
+      </div>
+    </div>
+    <div class="cross-layer">
+      <div class="cross-icon">📜</div>
+      <div class="cross-content">
+        <div class="cross-title">Data Lineage &amp; Catalog</div>
+        <div class="cross-desc">Azure Purview tracks CAD → Bronze → Silver → Gold · Schema evolution</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 7 — TECH STACK
+══════════════════════════════════════════════════════ -->
+<div class="section-label">07 — Technology Stack &amp; Azure Resources</div>
+
+<div class="panel accent-blue mb24">
+  <div class="grid-4" style="gap:12px">
+
+    <div>
+      <div style="font-size:10px; font-family:'Space Mono',monospace; color:var(--text3); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px">Orchestration</div>
+      <div class="tag-list" style="flex-direction:column; gap:6px">
+        <div style="display:flex; align-items:center; gap:8px; padding:7px 10px; background:var(--bg3); border:1px solid var(--border); border-radius:5px">
+          <span style="font-size:14px">⚙️</span>
+          <div>
+            <div style="font-size:11px; color:var(--text)">Azure Data Factory</div>
+            <div style="font-size:10px; color:var(--text3)">adf-engdata-dev</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:10px; font-family:'Space Mono',monospace; color:var(--text3); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px">Processing</div>
+      <div style="display:flex; align-items:center; gap:8px; padding:7px 10px; background:var(--bg3); border:1px solid var(--border); border-radius:5px">
+        <span style="font-size:14px">⚡</span>
+        <div>
+          <div style="font-size:11px; color:var(--text)">Azure Databricks</div>
+          <div style="font-size:10px; color:var(--text3)">dbx-engdata-dev · PySpark</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:10px; font-family:'Space Mono',monospace; color:var(--text3); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px">Storage</div>
+      <div style="display:flex; align-items:center; gap:8px; padding:7px 10px; background:var(--bg3); border:1px solid var(--border); border-radius:5px">
+        <span style="font-size:14px">💾</span>
+        <div>
+          <div style="font-size:11px; color:var(--text)">ADLS Gen2 + Delta Lake</div>
+          <div style="font-size:10px; color:var(--text3)">stengdataplatformdev</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:10px; font-family:'Space Mono',monospace; color:var(--text3); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px">Security &amp; BI</div>
+      <div style="display:flex; align-items:center; gap:8px; padding:7px 10px; background:var(--bg3); border:1px solid var(--border); border-radius:5px; margin-bottom:6px">
+        <span style="font-size:14px">🔐</span>
+        <div>
+          <div style="font-size:11px; color:var(--text)">Azure Key Vault</div>
+          <div style="font-size:10px; color:var(--text3)">kv-engdata-dev</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px; padding:7px 10px; background:var(--bg3); border:1px solid var(--border); border-radius:5px">
+        <span style="font-size:14px">📊</span>
+        <div>
+          <div style="font-size:11px; color:var(--text)">Power BI</div>
+          <div style="font-size:10px; color:var(--text3)">Serving layer consumer</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 8 — BUSINESS USE CASES
+══════════════════════════════════════════════════════ -->
+<div class="section-label">08 — Business Use Cases &amp; Key Design Decisions</div>
+
+<div class="grid-2 mb24">
+
+  <!-- USE CASES -->
+  <div class="panel accent-purple">
+    <div class="panel-title"><div class="dot" style="background:var(--purple)"></div>Business Use Cases</div>
+    <div class="cross-layer mb8">
+      <div class="cross-icon">💰</div>
+      <div><div class="cross-title">BOM-Level Cost Rollup</div><div class="cross-desc">Total cost per assembly by joining fact_bom + fact_cost + dim_part</div></div>
+    </div>
+    <div class="cross-layer mb8">
+      <div class="cross-icon">🔁</div>
+      <div><div class="cross-title">Revision Impact Analysis</div><div class="cross-desc">Compare cost across R1 → R2 revisions via dim_revision (SCD2)</div></div>
+    </div>
+    <div class="cross-layer mb8">
+      <div class="cross-icon">🏭</div>
+      <div><div class="cross-title">Material Cost Optimization</div><div class="cross-desc">Identify expensive materials — Steel vs Aluminum cost comparison</div></div>
+    </div>
+    <div class="cross-layer mb8">
+      <div class="cross-icon">📦</div>
+      <div><div class="cross-title">Supplier Performance</div><div class="cross-desc">Which supplier delivers lowest cost for a given part category</div></div>
+    </div>
+    <div class="cross-layer">
+      <div class="cross-icon">⚖️</div>
+      <div><div class="cross-title">Design Efficiency</div><div class="cross-desc">Heavy parts → high cost → flag for redesign recommendations</div></div>
+    </div>
+  </div>
+
+  <!-- KEY DESIGN DECISIONS -->
+  <div class="panel accent-orange">
+    <div class="panel-title"><div class="dot" style="background:var(--orange)"></div>Key Design Decisions</div>
+    <div class="decision-card" style="border-left-color:var(--accent)">
+      <div class="decision-q" style="color:var(--accent)">Why File-Based for CAD?</div>
+      <div class="decision-a">CAD exports are periodic and large. File ingestion is simpler, more reliable for bulk, and avoids API overhead on large design files.</div>
+    </div>
+    <div class="decision-card" style="border-left-color:var(--purple)">
+      <div class="decision-q" style="color:var(--purple)">Why CDC for PLM?</div>
+      <div class="decision-a">Revision tracking is critical. CDC captures every INSERT/UPDATE/DELETE, enabling SCD Type 2 history — batch ingestion would miss changes.</div>
+    </div>
+    <div class="decision-card" style="border-left-color:var(--orange)">
+      <div class="decision-q" style="color:var(--orange)">Why Incremental for ERP (not CDC)?</div>
+      <div class="decision-a">High ERP transaction volume makes CDC expensive. Watermark-based incremental load is efficient and sufficient for cost data refresh frequency.</div>
+    </div>
+    <div class="decision-card" style="border-left-color:var(--yellow)">
+      <div class="decision-q" style="color:var(--yellow)">Why ADLS for all metadata?</div>
+      <div class="decision-a">Sources are read-only. Metadata stored in ADLS avoids SQL dependency, is cloud-native, scalable, and enables configuration-driven pipelines.</div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     FOOTER FLOW SUMMARY
+══════════════════════════════════════════════════════ -->
+<div class="section-label">09 — End-to-End Flow Summary</div>
+
+<div style="padding:20px; background:var(--bg2); border:1px solid var(--border); border-radius:8px; overflow-x:auto">
+  <div style="display:flex; align-items:center; gap:0; min-width:900px; flex-wrap:nowrap">
+
+    <div style="text-align:center; padding:10px 14px; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.3); border-radius:6px; min-width:90px">
+      <div style="font-size:18px mb4">📐</div>
+      <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--accent)">CAD</div>
+      <div style="font-size:9px; color:var(--text3)">File Batch</div>
+    </div>
+    <div style="padding:0 6px; color:var(--border2); font-size:18px">→</div>
+
+    <div style="text-align:center; padding:10px 14px; background:rgba(167,139,250,0.08); border:1px solid rgba(167,139,250,0.3); border-radius:6px; min-width:90px">
+      <div style="font-size:18px">🔩</div>
+      <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--purple)">PLM</div>
+      <div style="font-size:9px; color:var(--text3)">CDC</div>
+    </div>
+    <div style="padding:0 6px; color:var(--border2); font-size:18px">→</div>
+
+    <div style="text-align:center; padding:10px 14px; background:rgba(251,146,60,0.08); border:1px solid rgba(251,146,60,0.3); border-radius:6px; min-width:90px">
+      <div style="font-size:18px">💰</div>
+      <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--orange)">ERP</div>
+      <div style="font-size:9px; color:var(--text3)">Incremental</div>
+    </div>
+    <div style="padding:0 6px; color:var(--border2); font-size:18px">→</div>
+
+    <div style="text-align:center; padding:10px 14px; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.3); border-radius:6px; min-width:100px">
+      <div style="font-size:18px">⚙️</div>
+      <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--accent)">ADF</div>
+      <div style="font-size:9px; color:var(--text3)">Pipelines</div>
+    </div>
+    <div style="padding:0 6px; color:var(--border2); font-size:18px">→</div>
+
+    <div style="text-align:center; padding:10px 14px; background:rgba(205,127,50,0.08); border:1px solid rgba(205,127,50,0.3); border-radius:6px; min-width:90px">
+      <div style="font-size:18px">🥉</div>
+      <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--bronze)">BRONZE</div>
+      <div style="font-size:9px; color:var(--text3)">Raw</div>
+    </div>
+    <div style="padding:0 6px; color:var(--border2); font-size:18px">→</div>
+
+    <div style="text-align:center; padding:10px 14px; background:rgba(148,163,184,0.08); border:1px solid rgba(148,163,184,0.3); border-radius:6px; min-width:90px">
+      <div style="font-size:18px">⚡</div>
+      <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--silver)">Databricks</div>
+      <div style="font-size:9px; color:var(--text3)">PySpark</div>
+    </div>
+    <div style="padding:0 6px; color:var(--border2); font-size:18px">→</div>
+
+    <div style="text-align:center; padding:10px 14px; background:rgba(148,163,184,0.08); border:1px solid rgba(148,163,184,0.3); border-radius:6px; min-width:90px">
+      <div style="font-size:18px">🥈</div>
+      <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--silver)">SILVER</div>
+      <div style="font-size:9px; color:var(--text3)">Cleaned</div>
+    </div>
+    <div style="padding:0 6px; color:var(--border2); font-size:18px">→</div>
+
+    <div style="text-align:center; padding:10px 14px; background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.3); border-radius:6px; min-width:90px">
+      <div style="font-size:18px">🥇</div>
+      <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--gold)">GOLD</div>
+      <div style="font-size:9px; color:var(--text3)">Star Schema</div>
+    </div>
+    <div style="padding:0 6px; color:var(--border2); font-size:18px">→</div>
+
+    <div style="text-align:center; padding:10px 14px; background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.3); border-radius:6px; min-width:90px">
+      <div style="font-size:18px">📊</div>
+      <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--green)">SERVING</div>
+      <div style="font-size:9px; color:var(--text3)">BI Ready</div>
+    </div>
+    <div style="padding:0 6px; color:var(--border2); font-size:18px">→</div>
+
+    <div style="text-align:center; padding:10px 14px; background:rgba(244,114,182,0.08); border:1px solid rgba(244,114,182,0.3); border-radius:6px; min-width:90px">
+      <div style="font-size:18px">📈</div>
+      <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--pink)">Power BI</div>
+      <div style="font-size:9px; color:var(--text3)">Analytics</div>
+    </div>
+
+  </div>
+</div>
+
+<div style="margin-top:10px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap">
+  <span class="tag yellow">🔄 Control &amp; Monitoring (ADF) — Runs above all layers</span>
+  <span class="tag pink">📋 Metadata &amp; Governance (ADLS) — Spans all layers</span>
+  <span class="tag green">🛡 Data Quality Checks — At every layer transition</span>
+</div>
+
+</body>
+</html>
