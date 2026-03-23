@@ -63,7 +63,14 @@
 			{
 				"name": "Set variable1",
 				"type": "SetVariable",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "LookupForFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"secureOutput": false,
 					"secureInput": false
@@ -72,13 +79,13 @@
 				"typeProperties": {
 					"variableName": "file_name",
 					"value": {
-						"value": "@pipeline().DataFactory",
+						"value": "@activity('LookupForFiles').output.count",
 						"type": "Expression"
 					}
 				}
 			},
 			{
-				"name": "Lookup1",
+				"name": "LookupForFiles",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -104,13 +111,14 @@
 					"dataset": {
 						"referenceName": "CAD_Metadata",
 						"type": "DatasetReference"
-					}
+					},
+					"firstRowOnly": false
 				}
 			}
 		],
 		"variables": {
 			"file_name": {
-				"type": "String"
+				"type": "Array"
 			},
 			"file_date": {
 				"type": "String"
