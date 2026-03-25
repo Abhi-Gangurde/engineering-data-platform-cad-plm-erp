@@ -181,7 +181,16 @@
 											"secureOutput": false,
 											"secureInput": false
 										},
-										"userProperties": [],
+										"userProperties": [
+											{
+												"name": "Source",
+												"value": "metadata//empty.json"
+											},
+											{
+												"name": "Destination",
+												"value": "metadata//last_load.json"
+											}
+										],
 										"typeProperties": {
 											"source": {
 												"type": "JsonSource",
@@ -196,7 +205,7 @@
 												],
 												"storeSettings": {
 													"type": "AzureBlobFSReadSettings",
-													"recursive": true,
+													"recursive": false,
 													"enablePartitionDiscovery": false
 												},
 												"formatSettings": {
@@ -206,27 +215,15 @@
 											"sink": {
 												"type": "JsonSink",
 												"storeSettings": {
-													"type": "AzureBlobFSWriteSettings"
+													"type": "AzureBlobFSWriteSettings",
+													"copyBehavior": "FlattenHierarchy"
 												},
 												"formatSettings": {
 													"type": "JsonWriteSettings",
-													"filePattern": "setOfObjects"
+													"filePattern": "arrayOfObjects"
 												}
 											},
-											"enableStaging": false,
-											"translator": {
-												"type": "TabularTranslator",
-												"mappings": [
-													{
-														"source": {
-															"path": "last_load_date"
-														},
-														"sink": {
-															"path": "last_load_date"
-														}
-													}
-												]
-											}
+											"enableStaging": false
 										},
 										"inputs": [
 											{
