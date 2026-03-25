@@ -78,13 +78,13 @@
 							"type": "IfCondition",
 							"dependsOn": [
 								{
-									"activity": "CurrentFileDate_1",
+									"activity": "LastLoadDate",
 									"dependencyConditions": [
 										"Succeeded"
 									]
 								},
 								{
-									"activity": "If Condition2",
+									"activity": "CurrentFileDate",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -274,64 +274,7 @@
 							}
 						},
 						{
-							"name": "If Condition2",
-							"type": "IfCondition",
-							"dependsOn": [
-								{
-									"activity": "Lookuplast_load_date",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"userProperties": [],
-							"typeProperties": {
-								"expression": {
-									"value": "@empty(activity('Lookuplast_load_date').output)",
-									"type": "Expression"
-								},
-								"ifFalseActivities": [
-									{
-										"name": "LastLoadDate",
-										"type": "SetVariable",
-										"dependsOn": [],
-										"policy": {
-											"secureOutput": false,
-											"secureInput": false
-										},
-										"userProperties": [],
-										"typeProperties": {
-											"variableName": "last_load_date",
-											"value": {
-												"value": "@activity('Lookuplast_load_date').output.firstRow",
-												"type": "Expression"
-											}
-										}
-									}
-								],
-								"ifTrueActivities": [
-									{
-										"name": "CurrentFileDate",
-										"type": "SetVariable",
-										"dependsOn": [],
-										"policy": {
-											"secureOutput": false,
-											"secureInput": false
-										},
-										"userProperties": [],
-										"typeProperties": {
-											"variableName": "last_load_date",
-											"value": {
-												"value": "@replace(\n    replace(\n        replace(\n            item().name, 'cad_metadata_','')\n            ,'.csv', '')\n            ,'_','-')\n",
-												"type": "Expression"
-											}
-										}
-									}
-								]
-							}
-						},
-						{
-							"name": "CurrentFileDate_1",
+							"name": "CurrentFileDate",
 							"type": "SetVariable",
 							"dependsOn": [],
 							"policy": {
@@ -343,6 +286,30 @@
 								"variableName": "current_file_date",
 								"value": {
 									"value": "@replace(\n    replace(\n        replace(\n            item().name, 'cad_metadata_','')\n            ,'.csv', '')\n            ,'_','-')\n",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "LastLoadDate",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Lookuplast_load_date",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "last_load_date",
+								"value": {
+									"value": "@if(\n    contains(string(activity('Lookuplast_load_date').output), 'firstRow'),\n    activity('Lookuplast_load_date').output.firstRow,\n    '1900-01-01'\n    )",
 									"type": "Expression"
 								}
 							}
