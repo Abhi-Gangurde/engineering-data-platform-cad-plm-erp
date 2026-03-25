@@ -1,0 +1,19 @@
+{
+	"name": "last_load_date",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_CAD_Pipeline_Status",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "last_load.json",
+				"fileSystem": "metadata"
+			}
+		},
+		"schema": {}
+	}
+}
