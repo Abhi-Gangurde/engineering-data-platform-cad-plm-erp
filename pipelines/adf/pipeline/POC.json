@@ -209,7 +209,8 @@
 													"type": "AzureBlobFSWriteSettings"
 												},
 												"formatSettings": {
-													"type": "JsonWriteSettings"
+													"type": "JsonWriteSettings",
+													"filePattern": "setOfObjects"
 												}
 											},
 											"enableStaging": false,
@@ -221,7 +222,7 @@
 															"path": "last_load_date"
 														},
 														"sink": {
-															"path": "$['last_load_date']"
+															"path": "last_load_date"
 														}
 													}
 												]
