@@ -98,7 +98,7 @@
 								},
 								"ifTrueActivities": [
 									{
-										"name": "Copy data1",
+										"name": "BatchLoadofCSV",
 										"type": "Copy",
 										"dependsOn": [],
 										"policy": {
@@ -160,6 +160,70 @@
 														"type": "Expression"
 													}
 												}
+											}
+										]
+									},
+									{
+										"name": "WaterMarkUpdate",
+										"type": "Copy",
+										"dependsOn": [
+											{
+												"activity": "BatchLoadofCSV",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "JsonSource",
+												"additionalColumns": [
+													{
+														"name": "last_load_date",
+														"value": {
+															"value": "@variables('current_file_date')",
+															"type": "Expression"
+														}
+													}
+												],
+												"storeSettings": {
+													"type": "AzureBlobFSReadSettings",
+													"recursive": true,
+													"enablePartitionDiscovery": false
+												},
+												"formatSettings": {
+													"type": "JsonReadSettings"
+												}
+											},
+											"sink": {
+												"type": "JsonSink",
+												"storeSettings": {
+													"type": "AzureBlobFSWriteSettings"
+												},
+												"formatSettings": {
+													"type": "JsonWriteSettings"
+												}
+											},
+											"enableStaging": false
+										},
+										"inputs": [
+											{
+												"referenceName": "EmptyJSON",
+												"type": "DatasetReference"
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "last_load_date",
+												"type": "DatasetReference"
 											}
 										]
 									}

@@ -1,0 +1,19 @@
+{
+	"name": "EmptyJSON",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_CAD_Pipeline_Status",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "empty.json",
+				"fileSystem": "metadata"
+			}
+		},
+		"schema": {}
+	}
+}
