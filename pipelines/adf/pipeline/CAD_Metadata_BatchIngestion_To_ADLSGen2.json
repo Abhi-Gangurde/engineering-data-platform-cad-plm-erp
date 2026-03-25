@@ -1,5 +1,5 @@
 {
-	"name": "POC",
+	"name": "CAD_Metadata_BatchIngestion_To_ADLSGen2",
 	"properties": {
 		"activities": [
 			{
@@ -72,7 +72,7 @@
 						"value": "@activity('FilterTheCsvFile').output.Value",
 						"type": "Expression"
 					},
-					"isSequential": true,
+					"isSequential": false,
 					"activities": [
 						{
 							"name": "Lookuplast_load_date",
