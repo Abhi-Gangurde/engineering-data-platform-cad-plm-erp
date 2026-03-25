@@ -72,6 +72,7 @@
 						"value": "@activity('FilterTheCsvFile').output.Value",
 						"type": "Expression"
 					},
+					"isSequential": true,
 					"activities": [
 						{
 							"name": "If Condition1",
@@ -93,7 +94,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@greaterOrEquals(variables('current_file_date'),variables('last_load_date'))",
+									"value": "@greater(variables('current_file_date'),variables('last_load_date'))",
 									"type": "Expression"
 								},
 								"ifTrueActivities": [
