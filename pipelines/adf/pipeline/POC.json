@@ -17,10 +17,7 @@
 				"typeProperties": {
 					"dataset": {
 						"referenceName": "CAD_Metadata",
-						"type": "DatasetReference",
-						"parameters": {
-							"Filename": "@dataset().Filename"
-						}
+						"type": "DatasetReference"
 					},
 					"fieldList": [
 						"childItems"
@@ -126,13 +123,7 @@
 							"inputs": [
 								{
 									"referenceName": "CAD_Metadata",
-									"type": "DatasetReference",
-									"parameters": {
-										"Filename": {
-											"value": "@item().name",
-											"type": "Expression"
-										}
-									}
+									"type": "DatasetReference"
 								}
 							],
 							"outputs": [
@@ -151,8 +142,16 @@
 						{
 							"name": "If Condition1",
 							"type": "IfCondition",
+							"state": "Inactive",
+							"onInactiveMarkAs": "Succeeded",
 							"dependsOn": [],
-							"userProperties": []
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@pipeline().parameters.last_load_date ",
+									"type": "Expression"
+								}
+							}
 						}
 					]
 				}
@@ -188,16 +187,6 @@
 				}
 			}
 		],
-		"parameters": {
-			"last_load_date": {
-				"type": "string"
-			}
-		},
-		"variables": {
-			"last_load_date": {
-				"type": "String"
-			}
-		},
 		"annotations": []
 	}
 }
