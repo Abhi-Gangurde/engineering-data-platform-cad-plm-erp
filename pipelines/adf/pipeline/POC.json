@@ -218,7 +218,7 @@
 												"mappings": [
 													{
 														"source": {
-															"path": "$"
+															"path": "last_load_date"
 														},
 														"sink": {
 															"path": "$['last_load_date']"
