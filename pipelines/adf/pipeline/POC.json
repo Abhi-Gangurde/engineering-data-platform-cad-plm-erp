@@ -220,7 +220,7 @@
 												},
 												"formatSettings": {
 													"type": "JsonWriteSettings",
-													"filePattern": "setOfObjects"
+													"filePattern": "arrayOfObjects"
 												}
 											},
 											"enableStaging": false
@@ -307,7 +307,7 @@
 							"typeProperties": {
 								"variableName": "last_load_date",
 								"value": {
-									"value": "@if(\n    contains(string(activity('Lookuplast_load_date').output), 'firstRow'),\n    activity('Lookuplast_load_date').output.firstRow,\n    '1900-01-01'\n    )",
+									"value": "@if(\n    contains(string(activity('Lookuplast_load_date').output), 'firstRow'),\n    activity('Lookuplast_load_date').output.firstRow.last_load_date,\n    '1900-01-01'\n    )",
 									"type": "Expression"
 								}
 							}
