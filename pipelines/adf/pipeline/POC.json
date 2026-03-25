@@ -78,13 +78,13 @@
 							"type": "IfCondition",
 							"dependsOn": [
 								{
-									"activity": "LastLoadDate",
+									"activity": "CurrentFileDate_1",
 									"dependencyConditions": [
 										"Succeeded"
 									]
 								},
 								{
-									"activity": "CurrentFileDate",
+									"activity": "If Condition2",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -93,7 +93,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@greater(variables('current_file_date'),variables('last_load_date') )",
+									"value": "@greaterOrEquals(variables('current_file_date'),variables('last_load_date'))",
 									"type": "Expression"
 								},
 								"ifTrueActivities": [
@@ -274,8 +274,8 @@
 							}
 						},
 						{
-							"name": "LastLoadDate",
-							"type": "SetVariable",
+							"name": "If Condition2",
+							"type": "IfCondition",
 							"dependsOn": [
 								{
 									"activity": "Lookuplast_load_date",
@@ -284,21 +284,54 @@
 									]
 								}
 							],
-							"policy": {
-								"secureOutput": false,
-								"secureInput": false
-							},
 							"userProperties": [],
 							"typeProperties": {
-								"variableName": "last_load_date",
-								"value": {
-									"value": "@activity('Lookuplast_load_date').output.firstRow.last_load_date",
+								"expression": {
+									"value": "@empty(activity('Lookuplast_load_date').output.firstRow)",
 									"type": "Expression"
-								}
+								},
+								"ifFalseActivities": [
+									{
+										"name": "LastLoadDate",
+										"type": "SetVariable",
+										"dependsOn": [],
+										"policy": {
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "last_load_date",
+											"value": {
+												"value": "@activity('Lookuplast_load_date').output.firstRow",
+												"type": "Expression"
+											}
+										}
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "CurrentFileDate",
+										"type": "SetVariable",
+										"dependsOn": [],
+										"policy": {
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "last_load_date",
+											"value": {
+												"value": "@replace(\n    replace(\n        replace(\n            item().name, 'cad_metadata_','')\n            ,'.csv', '')\n            ,'_','-')\n",
+												"type": "Expression"
+											}
+										}
+									}
+								]
 							}
 						},
 						{
-							"name": "CurrentFileDate",
+							"name": "CurrentFileDate_1",
 							"type": "SetVariable",
 							"dependsOn": [],
 							"policy": {
