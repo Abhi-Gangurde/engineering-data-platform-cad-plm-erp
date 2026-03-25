@@ -212,7 +212,20 @@
 													"type": "JsonWriteSettings"
 												}
 											},
-											"enableStaging": false
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"mappings": [
+													{
+														"source": {
+															"path": "$"
+														},
+														"sink": {
+															"path": "$['last_load_date']"
+														}
+													}
+												]
+											}
 										},
 										"inputs": [
 											{
