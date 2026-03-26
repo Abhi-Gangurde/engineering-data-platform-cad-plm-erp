@@ -192,7 +192,6 @@
 												"type": "DelimitedTextSource",
 												"storeSettings": {
 													"type": "FileServerReadSettings",
-													"recursive": false,
 													"enablePartitionDiscovery": false
 												},
 												"formatSettings": {
@@ -227,7 +226,7 @@
 												"type": "DatasetReference",
 												"parameters": {
 													"file_name": {
-														"value": "@item()",
+														"value": "@item().name",
 														"type": "Expression"
 													}
 												}
