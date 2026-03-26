@@ -1,0 +1,46 @@
+{
+	"name": "CAD_Metadata_Folder",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_OnPrem_CAD_Metadata",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "FileServerLocation"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "part_id",
+				"type": "String"
+			},
+			{
+				"name": "part_name",
+				"type": "String"
+			},
+			{
+				"name": "material",
+				"type": "String"
+			},
+			{
+				"name": "weight_kg",
+				"type": "String"
+			},
+			{
+				"name": "designer",
+				"type": "String"
+			},
+			{
+				"name": "created_date",
+				"type": "String"
+			}
+		]
+	}
+}
