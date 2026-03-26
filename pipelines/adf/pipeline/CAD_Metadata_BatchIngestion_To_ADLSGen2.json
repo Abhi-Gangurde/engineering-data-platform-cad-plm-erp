@@ -192,6 +192,7 @@
 												"type": "DelimitedTextSource",
 												"storeSettings": {
 													"type": "FileServerReadSettings",
+													"recursive": false,
 													"enablePartitionDiscovery": false
 												},
 												"formatSettings": {
