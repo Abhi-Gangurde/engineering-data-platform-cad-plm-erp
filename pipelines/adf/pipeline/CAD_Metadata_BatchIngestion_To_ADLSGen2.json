@@ -186,8 +186,6 @@
 												"type": "DelimitedTextSource",
 												"storeSettings": {
 													"type": "FileServerReadSettings",
-													"recursive": false,
-													"wildcardFileName": "*",
 													"enablePartitionDiscovery": false
 												},
 												"formatSettings": {
@@ -219,7 +217,13 @@
 										"inputs": [
 											{
 												"referenceName": "CAD_Metadata",
-												"type": "DatasetReference"
+												"type": "DatasetReference",
+												"parameters": {
+													"file_name": {
+														"value": "@activity('FilterTheCsvFile').output.Value.name",
+														"type": "Expression"
+													}
+												}
 											}
 										],
 										"outputs": [
