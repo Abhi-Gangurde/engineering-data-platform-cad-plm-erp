@@ -17,7 +17,13 @@
 				"typeProperties": {
 					"dataset": {
 						"referenceName": "CAD_Metadata",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"file_name": {
+								"value": "/",
+								"type": "Expression"
+							}
+						}
 					},
 					"fieldList": [
 						"childItems"
@@ -186,6 +192,7 @@
 												"type": "DelimitedTextSource",
 												"storeSettings": {
 													"type": "FileServerReadSettings",
+													"recursive": false,
 													"enablePartitionDiscovery": false
 												},
 												"formatSettings": {
@@ -220,7 +227,7 @@
 												"type": "DatasetReference",
 												"parameters": {
 													"file_name": {
-														"value": "@activity('FilterTheCsvFile').output.Value.name",
+														"value": "@item()",
 														"type": "Expression"
 													}
 												}
@@ -326,6 +333,9 @@
 				"type": "String"
 			},
 			"current_file_date": {
+				"type": "String"
+			},
+			"file_name": {
 				"type": "String"
 			}
 		},
