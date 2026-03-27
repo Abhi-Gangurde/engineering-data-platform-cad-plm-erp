@@ -159,6 +159,60 @@
 									"type": "DatasetReference"
 								}
 							]
+						},
+						{
+							"name": "copy_erp_cost",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": {
+										"value": "SELECT\n    part_id,\n    supplier_name,\n    cost,\n    currency,\n    last_updated,\n    SYSUTCDATETIME() AS _ingestion_ts\nFROM dbo.erp_cost\nWHERE last_updated >  '@{item().last_watermark}'\n  AND last_updated <= SYSUTCDATETIME()",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "ParquetSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "ParquetWriteSettings"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_SQL_erp_cost_src",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_ADLSGen2_erp_cost_sink",
+									"type": "DatasetReference"
+								}
+							]
 						}
 					]
 				}
@@ -194,7 +248,7 @@
 						"type": "Expression"
 					},
 					"body": {
-						"value": "@concat(\n  '[',\n  '{\"table_name\":\"plm_revisions\",\"last_watermark\":\"', utcNow('yyyy-MM-dd HH:mm:ss'), '\",\"merge_key\":[\"part_id\",\"revision\"],\"adls_path\":\"bronze/plm/revisions\"}',\n  ',',\n  '{\"table_name\":\"plm_bom\",\"last_watermark\":\"', utcNow('yyyy-MM-dd HH:mm:ss'), '\",\"merge_key\":[\"assembly_id\",\"part_id\"],\"adls_path\":\"bronze/plm/bom\"}',\n  ']'\n)",
+						"value": "@concat('[',\n  '{\"table_name\":\"plm_revisions\",\"last_watermark\":\"',   formatDateTime(utcNow(),'yyyy-MM-dd HH:mm:ss'), '\",\"merge_key\":[\"part_id\",\"revision\"],\"adls_path\":\"bronze/plm/revisions\"}',\n  ',',\n  '{\"table_name\":\"plm_bom\",\"last_watermark\":\"',         formatDateTime(utcNow(),'yyyy-MM-dd HH:mm:ss'), '\",\"merge_key\":[\"assembly_id\",\"part_id\"],\"adls_path\":\"bronze/plm/bom\"}',\n  ',',\n  '{\"table_name\":\"erp_cost\",\"last_watermark\":\"',        formatDateTime(utcNow(),'yyyy-MM-dd HH:mm:ss'), '\",\"merge_key\":[\"part_id\",\"supplier_name\"],\"adls_path\":\"bronze/erp/cost\"}',\n']')",
 						"type": "Expression"
 					},
 					"authentication": {

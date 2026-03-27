@@ -1,0 +1,37 @@
+{
+	"name": "DS_SQL_erp_cost_src",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ERP_Database",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "part_id",
+				"type": "varchar"
+			},
+			{
+				"name": "supplier_name",
+				"type": "varchar"
+			},
+			{
+				"name": "cost",
+				"type": "varchar"
+			},
+			{
+				"name": "currency",
+				"type": "varchar"
+			},
+			{
+				"name": "last_updated",
+				"type": "date"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "erp_cost"
+		}
+	}
+}
