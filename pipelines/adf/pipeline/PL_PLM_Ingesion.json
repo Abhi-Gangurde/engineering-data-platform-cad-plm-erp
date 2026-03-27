@@ -190,6 +190,7 @@
 					"method": "PUT",
 					"headers": {
 						"Content-Type": "application/json",
+						"x-ms-version": "2020-04-08",
 						"x-ms-blob-type": "BlockBlob"
 					},
 					"url": {
