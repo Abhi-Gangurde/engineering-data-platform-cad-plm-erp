@@ -1,0 +1,48 @@
+{
+	"name": "PL_Master_Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "BatchIngestionCAD_Metadata_Ingestion",
+				"description": "Batch Ingestion",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_CAD_Metadata_Ingesion",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "IncrementalLoad_ERP_PLM",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "BatchIngestionCAD_Metadata_Ingestion",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_PLM-ERP_Ingesion",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": []
+	}
+}
