@@ -1,0 +1,20 @@
+{
+	"name": "DS_JSON_PLM_watermark",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_CAD_Pipeline_Status",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "plm_watermark.json",
+				"folderPath": "plm/watermark",
+				"fileSystem": "bronze"
+			}
+		},
+		"schema": {}
+	}
+}

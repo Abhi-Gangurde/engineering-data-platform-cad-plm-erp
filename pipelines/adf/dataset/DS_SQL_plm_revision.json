@@ -1,0 +1,35 @@
+{
+	"name": "DS_SQL_plm_revision",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "PLM_Database",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "assembly_id",
+				"type": "varchar"
+			},
+			{
+				"name": "part_id",
+				"type": "varchar"
+			},
+			{
+				"name": "quantity",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "last_modified",
+				"type": "datetime2",
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "assembly_parts"
+		}
+	}
+}
