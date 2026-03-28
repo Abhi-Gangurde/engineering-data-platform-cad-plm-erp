@@ -11,8 +11,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": "plm_watermark.json",
-				"folderPath": "plm/watermark",
-				"fileSystem": "bronze"
+				"fileSystem": "metadata"
 			}
 		},
 		"schema": {}
