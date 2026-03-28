@@ -108,7 +108,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "SELECT\n    part_id,\n    revision,\n    status,\n    effective_from,\n    effective_to,\n    last_modified,\n    SYSUTCDATETIME() AS _ingestion_ts\nFROM dbo.plm_revisions\nWHERE last_modified >  ''@{activity('Lookup-GetLatestWatermark').output.value[0].last_watermark}''\n  AND last_modified <= SYSUTCDATETIME()",
+							"value": "SELECT\n    part_id,\n    revision,\n    status,\n    effective_from,\n    effective_to,\n    last_modified,\n    SYSUTCDATETIME() AS _ingestion_ts\nFROM dbo.plm_revisions\nWHERE last_modified >  '@{activity('Lookup-GetLatestWatermark').output.value[0].last_watermark}'\n  AND last_modified <= SYSUTCDATETIME()",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -169,7 +169,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "SELECT\n    assembly_id,\n    part_id,\n    quantity,\n    last_modified,\n    SYSUTCDATETIME() AS _ingestion_ts\nFROM dbo.plm_bom\nWHERE last_modified >  ''@{activity('Lookup-GetLatestWatermark').output.value[1].last_watermark}''\n  AND last_modified <= SYSUTCDATETIME()",
+							"value": "SELECT\n    assembly_id,\n    part_id,\n    quantity,\n    last_modified,\n    SYSUTCDATETIME() AS _ingestion_ts\nFROM dbo.plm_bom\nWHERE last_modified >  '@{activity('Lookup-GetLatestWatermark').output.value[1].last_watermark}'\n  AND last_modified <= SYSUTCDATETIME()",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -230,7 +230,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "SELECT\n    part_id,\n    supplier_name,\n    cost,\n    currency,\n    last_updated,\n    SYSUTCDATETIME() AS _ingestion_ts\nFROM dbo.erp_cost\nWHERE last_updated >  ''@{activity('Lookup-GetLatestWatermark').output.value[2].last_watermark}''\n  AND last_updated <= SYSUTCDATETIME()",
+							"value": "SELECT\n    part_id,\n    supplier_name,\n    cost,\n    currency,\n    last_updated,\n    SYSUTCDATETIME() AS _ingestion_ts\nFROM dbo.erp_cost\nWHERE last_updated >  '@{activity('Lookup-GetLatestWatermark').output.value[2].last_watermark}'\n  AND last_updated <= SYSUTCDATETIME()",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
