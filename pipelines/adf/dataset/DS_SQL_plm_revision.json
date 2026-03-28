@@ -29,7 +29,7 @@
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "assembly_parts"
+			"table": "plm_revisions"
 		}
 	}
 }
