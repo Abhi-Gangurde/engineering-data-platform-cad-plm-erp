@@ -4,7 +4,7 @@
 		"activities": [
 			{
 				"name": "BatchIngestionCAD_Metadata_Ingestion",
-				"description": "Batch Ingestion — CAD metadata CSV files from file server",
+				"description": "Batch Ingestion",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"policy": {
@@ -21,7 +21,6 @@
 			},
 			{
 				"name": "IncrementalLoad_ERP_PLM",
-				"description": "Incremental CDC load — plm_revisions, plm_bom, erp_cost from Azure SQL",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"policy": {
@@ -38,7 +37,6 @@
 			},
 			{
 				"name": "Bronze",
-				"description": "Raw ingestion — land all sources into Unity Catalog bronze_plm",
 				"type": "DatabricksNotebook",
 				"dependsOn": [
 					{
@@ -56,8 +54,8 @@
 				],
 				"policy": {
 					"timeout": "0.12:00:00",
-					"retry": 1,
-					"retryIntervalInSeconds": 60,
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -75,7 +73,6 @@
 			},
 			{
 				"name": "Silver",
-				"description": "Cleanse, type, validate and quarantine — writes to silver_plm",
 				"type": "DatabricksNotebook",
 				"dependsOn": [
 					{
@@ -87,8 +84,8 @@
 				],
 				"policy": {
 					"timeout": "0.12:00:00",
-					"retry": 1,
-					"retryIntervalInSeconds": 60,
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -106,7 +103,6 @@
 			},
 			{
 				"name": "Gold",
-				"description": "Aggregate and model — writes dims, facts and aggs to gold_plm",
 				"type": "DatabricksNotebook",
 				"dependsOn": [
 					{
@@ -118,8 +114,8 @@
 				],
 				"policy": {
 					"timeout": "0.12:00:00",
-					"retry": 1,
-					"retryIntervalInSeconds": 60,
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -137,7 +133,6 @@
 			},
 			{
 				"name": "Serving",
-				"description": "Consumer-shaped views and marts — writes to serving_plm",
 				"type": "DatabricksNotebook",
 				"dependsOn": [
 					{
@@ -149,35 +144,6 @@
 				],
 				"policy": {
 					"timeout": "0.12:00:00",
-					"retry": 1,
-					"retryIntervalInSeconds": 60,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"notebookPath": {
-						"value": "@pipeline().parameters.nb_serve",
-						"type": "Expression"
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricks1",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
-				"name": "Governance",
-				"type": "DatabricksNotebook",
-				"dependsOn": [
-					{
-						"activity": "Serving",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
 					"retry": 0,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
@@ -186,7 +152,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"notebookPath": {
-						"value": "@pipeline().parameters.nb_govern",
+						"value": "@pipeline().parameters.nb_serve",
 						"type": "Expression"
 					}
 				},
@@ -203,19 +169,15 @@
 			},
 			"nb_silver": {
 				"type": "string",
-				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/silver/nb_silver_layer_ingestion"
+				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/bronze/nb_silver_layer_ingestion"
 			},
 			"nb_gold": {
 				"type": "string",
-				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/gold/nb_gold_layer"
+				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/bronze/nb_gold_layer_ingestion"
 			},
 			"nb_serve": {
 				"type": "string",
-				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/serving/nb_serving_layer"
-			},
-			"nb_govern": {
-				"type": "string",
-				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/Governance/nb_governance_monitoring"
+				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/bronze/nb_serving_layer_ingestion"
 			}
 		},
 		"annotations": []
