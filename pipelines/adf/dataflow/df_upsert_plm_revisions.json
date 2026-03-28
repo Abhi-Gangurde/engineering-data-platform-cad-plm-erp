@@ -21,7 +21,11 @@
 						"type": "DatasetReference"
 					},
 					"name": "SinkDeltaRevisions",
-					"description": "Delta UPSERT sink at bronze/plm/revisions"
+					"description": "Delta UPSERT sink at bronze/plm/revisions",
+					"rejectedDataLinkedService": {
+						"referenceName": "LS_ADLS_CAD_Pipeline_Status",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
