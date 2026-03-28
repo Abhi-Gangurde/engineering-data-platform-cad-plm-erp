@@ -4,7 +4,7 @@
 		"activities": [
 			{
 				"name": "BatchIngestionCAD_Metadata_Ingestion",
-				"description": "Batch Ingestion",
+				"description": "Batch Ingestion — CAD metadata CSV files from file server",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"policy": {
@@ -21,6 +21,7 @@
 			},
 			{
 				"name": "IncrementalLoad_ERP_PLM",
+				"description": "Incremental CDC load — plm_revisions, plm_bom, erp_cost from Azure SQL",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"policy": {
@@ -34,8 +35,189 @@
 					},
 					"waitOnCompletion": true
 				}
+			},
+			{
+				"name": "Bronze",
+				"description": "Raw ingestion — land all sources into Unity Catalog bronze_plm",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "BatchIngestionCAD_Metadata_Ingestion",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "IncrementalLoad_ERP_PLM",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 60,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@pipeline().parameters.nb_bronze",
+						"type": "Expression"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Silver",
+				"description": "Cleanse, type, validate and quarantine — writes to silver_plm",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Bronze",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 60,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@pipeline().parameters.nb_silver",
+						"type": "Expression"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Gold",
+				"description": "Aggregate and model — writes dims, facts and aggs to gold_plm",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Silver",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 60,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@pipeline().parameters.nb_gold",
+						"type": "Expression"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Serving",
+				"description": "Consumer-shaped views and marts — writes to serving_plm",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Gold",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 60,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@pipeline().parameters.nb_serve",
+						"type": "Expression"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Governance",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Serving",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@pipeline().parameters.nb_govern",
+						"type": "Expression"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
+		"parameters": {
+			"nb_bronze": {
+				"type": "string",
+				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/bronze/nb_bronze_layer_ingestion"
+			},
+			"nb_silver": {
+				"type": "string",
+				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/silver/nb_silver_layer_ingestion"
+			},
+			"nb_gold": {
+				"type": "string",
+				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/gold/nb_gold_layer"
+			},
+			"nb_serve": {
+				"type": "string",
+				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/serving/nb_serving_layer"
+			},
+			"nb_govern": {
+				"type": "string",
+				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/Governance/nb_governance_monitoring"
+			}
+		},
 		"annotations": []
 	}
 }
