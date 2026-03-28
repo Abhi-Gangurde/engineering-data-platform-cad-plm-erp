@@ -22,14 +22,7 @@
 			{
 				"name": "IncrementalLoad_ERP_PLM",
 				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "BatchIngestionCAD_Metadata_Ingestion",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"secureInput": false
 				},
