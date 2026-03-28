@@ -34,191 +34,23 @@
 				}
 			},
 			{
-				"name": "ForEachCopy",
-				"type": "ForEach",
-				"dependsOn": [
-					{
-						"activity": "Lookup-GetLatestWatermark",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@activity('Lookup-GetLatestWatermark').output.value",
-						"type": "Expression"
-					},
-					"activities": [
-						{
-							"name": "copy_plm_revisions",
-							"type": "Copy",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "AzureSqlSource",
-									"sqlReaderQuery": "SELECT\n    part_id,\n    revision,\n    status,\n    effective_from,\n    effective_to,\n    last_modified,\n    SYSUTCDATETIME() AS _ingestion_ts\nFROM dbo.plm_revisions\nWHERE last_modified >  '@{item().last_watermark}'\n  AND last_modified <= SYSUTCDATETIME()",
-									"queryTimeout": "02:00:00",
-									"partitionOption": "None"
-								},
-								"sink": {
-									"type": "ParquetSink",
-									"storeSettings": {
-										"type": "AzureBlobFSWriteSettings"
-									},
-									"formatSettings": {
-										"type": "ParquetWriteSettings"
-									}
-								},
-								"enableStaging": false,
-								"translator": {
-									"type": "TabularTranslator",
-									"typeConversion": true,
-									"typeConversionSettings": {
-										"allowDataTruncation": true,
-										"treatBooleanAsNumber": false
-									}
-								}
-							},
-							"inputs": [
-								{
-									"referenceName": "DS_SQL_plm_revision",
-									"type": "DatasetReference"
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "DS_ADLS_PLM_revisions_sink",
-									"type": "DatasetReference"
-								}
-							]
-						},
-						{
-							"name": "copy_plm_bom",
-							"type": "Copy",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "AzureSqlSource",
-									"sqlReaderQuery": {
-										"value": "SELECT\n    assembly_id,\n    part_id,\n    quantity,\n    last_modified,\n    SYSUTCDATETIME() AS _ingestion_ts\nFROM dbo.plm_bom\nWHERE last_modified >  '@{item().last_watermark}'\n  AND last_modified <= SYSUTCDATETIME()",
-										"type": "Expression"
-									},
-									"queryTimeout": "02:00:00",
-									"partitionOption": "None"
-								},
-								"sink": {
-									"type": "ParquetSink",
-									"storeSettings": {
-										"type": "AzureBlobFSWriteSettings"
-									},
-									"formatSettings": {
-										"type": "ParquetWriteSettings"
-									}
-								},
-								"enableStaging": false,
-								"translator": {
-									"type": "TabularTranslator",
-									"typeConversion": true,
-									"typeConversionSettings": {
-										"allowDataTruncation": true,
-										"treatBooleanAsNumber": false
-									}
-								}
-							},
-							"inputs": [
-								{
-									"referenceName": "DS_SQL_plm_bom",
-									"type": "DatasetReference"
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "DS_ADLS_PLM_bom_sink",
-									"type": "DatasetReference"
-								}
-							]
-						},
-						{
-							"name": "copy_erp_cost",
-							"type": "Copy",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "AzureSqlSource",
-									"sqlReaderQuery": {
-										"value": "SELECT\n    part_id,\n    supplier_name,\n    cost,\n    currency,\n    last_updated,\n    SYSUTCDATETIME() AS _ingestion_ts\nFROM dbo.erp_cost\nWHERE last_updated >  '@{item().last_watermark}'\n  AND last_updated <= SYSUTCDATETIME()",
-										"type": "Expression"
-									},
-									"queryTimeout": "02:00:00",
-									"partitionOption": "None"
-								},
-								"sink": {
-									"type": "ParquetSink",
-									"storeSettings": {
-										"type": "AzureBlobFSWriteSettings"
-									},
-									"formatSettings": {
-										"type": "ParquetWriteSettings"
-									}
-								},
-								"enableStaging": false,
-								"translator": {
-									"type": "TabularTranslator",
-									"typeConversion": true,
-									"typeConversionSettings": {
-										"allowDataTruncation": true,
-										"treatBooleanAsNumber": false
-									}
-								}
-							},
-							"inputs": [
-								{
-									"referenceName": "DS_SQL_erp_cost_src",
-									"type": "DatasetReference"
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "DS_ADLSGen2_erp_cost_sink",
-									"type": "DatasetReference"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
 				"name": "writeupdatedwatermarkjson",
 				"type": "WebActivity",
 				"dependsOn": [
 					{
-						"activity": "ForEachCopy",
+						"activity": "copy_plm_revisions",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "copy_plm_bom",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "copy_erp_cost",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -252,6 +84,189 @@
 						"resource": "https://storage.azure.com/"
 					}
 				}
+			},
+			{
+				"name": "copy_plm_revisions",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Lookup-GetLatestWatermark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "SELECT\n    part_id,\n    revision,\n    status,\n    effective_from,\n    effective_to,\n    last_modified,\n    SYSUTCDATETIME() AS _ingestion_ts\nFROM dbo.plm_revisions\nWHERE last_modified >  ''@{activity('Lookup-GetLatestWatermark').output.value[0].last_watermark}''\n  AND last_modified <= SYSUTCDATETIME()",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_SQL_plm_revision",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_ADLS_PLM_revisions_sink",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "copy_plm_bom",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Lookup-GetLatestWatermark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "SELECT\n    assembly_id,\n    part_id,\n    quantity,\n    last_modified,\n    SYSUTCDATETIME() AS _ingestion_ts\nFROM dbo.plm_bom\nWHERE last_modified >  ''@{activity('Lookup-GetLatestWatermark').output.value[1].last_watermark}''\n  AND last_modified <= SYSUTCDATETIME()",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_SQL_plm_bom",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_ADLS_PLM_bom_sink",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "copy_erp_cost",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Lookup-GetLatestWatermark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "SELECT\n    part_id,\n    supplier_name,\n    cost,\n    currency,\n    last_updated,\n    SYSUTCDATETIME() AS _ingestion_ts\nFROM dbo.erp_cost\nWHERE last_updated >  ''@{activity('Lookup-GetLatestWatermark').output.value[2].last_watermark}''\n  AND last_updated <= SYSUTCDATETIME()",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_SQL_erp_cost_src",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_ADLSGen2_erp_cost_sink",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
