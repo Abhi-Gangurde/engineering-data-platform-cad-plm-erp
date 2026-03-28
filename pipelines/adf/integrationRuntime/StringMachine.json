@@ -1,0 +1,28 @@
+{
+	"name": "StringMachine",
+	"properties": {
+		"type": "Managed",
+		"typeProperties": {
+			"computeProperties": {
+				"location": "Central India",
+				"nodeSize": "Standard_D8_v3",
+				"numberOfNodes": 10,
+				"maxParallelExecutionsPerNode": 8
+			},
+			"ssisProperties": {
+				"catalogInfo": {
+					"catalogServerEndpoint": "servererpsqldb.database.windows.net",
+					"catalogAdminUserName": "servererpsqldb",
+					"catalogAdminPassword": {
+						"type": "SecureString",
+						"value": "**********"
+					},
+					"catalogPricingTier": "S3"
+				},
+				"edition": "Standard",
+				"runtimeVersion": "2017",
+				"licenseType": "BasePrice"
+			}
+		}
+	}
+}
