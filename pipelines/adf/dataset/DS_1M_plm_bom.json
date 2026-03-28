@@ -1,0 +1,47 @@
+{
+	"name": "DS_1M_plm_bom",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_CAD_Pipeline_Status",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "SRC"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "plm_bom_1M.csv",
+				"fileSystem": "raw"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "part_id",
+				"type": "String"
+			},
+			{
+				"name": "supplier_name",
+				"type": "String"
+			},
+			{
+				"name": "cost",
+				"type": "String"
+			},
+			{
+				"name": "currency",
+				"type": "String"
+			},
+			{
+				"name": "last_updated",
+				"type": "String"
+			}
+		]
+	}
+}
