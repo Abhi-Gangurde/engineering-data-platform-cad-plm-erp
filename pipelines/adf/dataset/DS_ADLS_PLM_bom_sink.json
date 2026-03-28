@@ -1,5 +1,5 @@
 {
-	"name": "DS_ADLS_PLM_bom_sink1",
+	"name": "DS_ADLS_PLM_bom_sink",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_ADLS_CAD_Pipeline_Status",

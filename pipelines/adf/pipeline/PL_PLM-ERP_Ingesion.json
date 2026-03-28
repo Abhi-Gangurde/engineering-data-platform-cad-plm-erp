@@ -71,14 +71,12 @@
 									"partitionOption": "None"
 								},
 								"sink": {
-									"type": "DelimitedTextSink",
+									"type": "ParquetSink",
 									"storeSettings": {
 										"type": "AzureBlobFSWriteSettings"
 									},
 									"formatSettings": {
-										"type": "DelimitedTextWriteSettings",
-										"quoteAllText": true,
-										"fileExtension": ".txt"
+										"type": "ParquetWriteSettings"
 									}
 								},
 								"enableStaging": false,
@@ -99,7 +97,7 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "DS_ADLS_PLM_revisions_Sink",
+									"referenceName": "DS_ADLS_PLM_revisions_sink",
 									"type": "DatasetReference"
 								}
 							]
@@ -127,14 +125,12 @@
 									"partitionOption": "None"
 								},
 								"sink": {
-									"type": "DelimitedTextSink",
+									"type": "ParquetSink",
 									"storeSettings": {
 										"type": "AzureBlobFSWriteSettings"
 									},
 									"formatSettings": {
-										"type": "DelimitedTextWriteSettings",
-										"quoteAllText": true,
-										"fileExtension": ".txt"
+										"type": "ParquetWriteSettings"
 									}
 								},
 								"enableStaging": false,
@@ -155,7 +151,7 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "DS_ADLS_PLM_bom_Sink",
+									"referenceName": "DS_ADLS_PLM_bom_sink",
 									"type": "DatasetReference"
 								}
 							]
