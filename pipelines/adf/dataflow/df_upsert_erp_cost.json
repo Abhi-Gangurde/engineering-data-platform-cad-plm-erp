@@ -1,0 +1,51 @@
+{
+	"name": "df_upsert_erp_cost",
+	"properties": {
+		"description": "Incremental UPSERT of erp_cost staging Parquet into Delta table. Merge key: part_id + supplier_name.",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_ADLSGen2_erp_cost_sink",
+						"type": "DatasetReference"
+					},
+					"name": "SourceStagingParquet",
+					"description": "Reads incremental Parquet written by copy_erp_cost"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_ADLSGen2_erp_cost_sink",
+						"type": "DatasetReference"
+					},
+					"name": "SinkDeltaErpCost",
+					"description": "Delta UPSERT sink at bronze/erp/cost"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AlterRowUpsert",
+					"description": "Mark every incoming row as an UPSERT candidate"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: true,",
+				"     format: 'parquet') ~> SourceStagingParquet",
+				"SourceStagingParquet alterRow(upsertIf(true())) ~> AlterRowUpsert",
+				"AlterRowUpsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     vacuum: 0) ~> SinkDeltaErpCost"
+			]
+		}
+	}
+}

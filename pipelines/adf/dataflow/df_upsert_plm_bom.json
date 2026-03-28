@@ -1,0 +1,51 @@
+{
+	"name": "df_upsert_plm_bom",
+	"properties": {
+		"description": "Incremental UPSERT of plm_bom staging Parquet into Delta table. Merge key: assembly_id + part_id.",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_ADLS_PLM_bom_sink",
+						"type": "DatasetReference"
+					},
+					"name": "SourceStagingParquet",
+					"description": "Reads incremental Parquet written by copy_plm_bom"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_ADLS_PLM_bom_sink",
+						"type": "DatasetReference"
+					},
+					"name": "SinkDeltaBom",
+					"description": "Delta UPSERT sink at bronze/plm/bom"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AlterRowUpsert",
+					"description": "Mark every incoming row as an UPSERT candidate"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: true,",
+				"     format: 'parquet') ~> SourceStagingParquet",
+				"SourceStagingParquet alterRow(upsertIf(true())) ~> AlterRowUpsert",
+				"AlterRowUpsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     vacuum: 0) ~> SinkDeltaBom"
+			]
+		}
+	}
+}
