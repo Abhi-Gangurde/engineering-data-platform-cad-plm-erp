@@ -123,15 +123,15 @@
 			},
 			"nb_silver": {
 				"type": "string",
-				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/bronze/nb_silver_layer_ingestion"
+				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/silver/nb_silver_layer_ingestion"
 			},
 			"nb_gold": {
 				"type": "string",
-				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/bronze/nb_gold_layer_ingestion"
+				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/gold/nb_gold_layer_ingestion"
 			},
 			"nb_serve": {
 				"type": "string",
-				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/bronze/nb_serving_layer_ingestion"
+				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/serving/nb_serving_layer_ingestion"
 			}
 		},
 		"annotations": []
