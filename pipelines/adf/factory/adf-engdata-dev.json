@@ -2,7 +2,9 @@
 	"name": "adf-engdata-dev",
 	"properties": {
 		"globalConfigurations": {
-			"PipelineBillingEnabled": "true"
+			"PipelineBillingEnabled": "true",
+			"factoryStagingLSReferenceName": "LS_ADLS_CAD_Pipeline_Status",
+			"factoryStagingLSType": "LinkedServiceReference"
 		}
 	},
 	"location": "centralindia",
