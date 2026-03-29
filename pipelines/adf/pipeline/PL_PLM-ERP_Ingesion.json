@@ -72,7 +72,7 @@
 						"x-ms-blob-type": "BlockBlob"
 					},
 					"url": {
-						"value": "https://stengdataplatformdev.blob.core.windows.net/bronze/plm/watermark/plm_watermark.json",
+						"value": "https://stengdataplatformdev.blob.core.windows.net/metadata/plm_watermark.json",
 						"type": "Expression"
 					},
 					"body": {

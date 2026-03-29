@@ -36,8 +36,8 @@
 				}
 			},
 			{
-				"name": "Bronze",
-				"type": "DatabricksNotebook",
+				"name": "MedalionArch",
+				"type": "DatabricksJob",
 				"dependsOn": [
 					{
 						"activity": "BatchIngestionCAD_Metadata_Ingestion",
@@ -61,100 +61,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebookPath": {
-						"value": "@pipeline().parameters.nb_bronze",
-						"type": "Expression"
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricks1",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
-				"name": "Silver",
-				"type": "DatabricksNotebook",
-				"dependsOn": [
-					{
-						"activity": "Bronze",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"notebookPath": {
-						"value": "@pipeline().parameters.nb_silver",
-						"type": "Expression"
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricks1",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
-				"name": "Gold",
-				"type": "DatabricksNotebook",
-				"dependsOn": [
-					{
-						"activity": "Silver",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"notebookPath": {
-						"value": "@pipeline().parameters.nb_gold",
-						"type": "Expression"
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricks1",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
-				"name": "Serving",
-				"type": "DatabricksNotebook",
-				"dependsOn": [
-					{
-						"activity": "Gold",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"notebookPath": {
-						"value": "@pipeline().parameters.nb_serve",
-						"type": "Expression"
-					}
+					"jobId": "853200603777198"
 				},
 				"linkedServiceName": {
 					"referenceName": "AzureDatabricks1",
@@ -162,24 +69,6 @@
 				}
 			}
 		],
-		"parameters": {
-			"nb_bronze": {
-				"type": "string",
-				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/bronze/nb_bronze_layer_ingestion"
-			},
-			"nb_silver": {
-				"type": "string",
-				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/bronze/nb_silver_layer_ingestion"
-			},
-			"nb_gold": {
-				"type": "string",
-				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/bronze/nb_gold_layer_ingestion"
-			},
-			"nb_serve": {
-				"type": "string",
-				"defaultValue": "/Users/abhishek.gangurde.work@gmail.com/engineering-data-platform-cad-plm-erp/adb/scripts/bronze/nb_serving_layer_ingestion"
-			}
-		},
 		"annotations": []
 	}
 }
