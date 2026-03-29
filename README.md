@@ -1,6 +1,6 @@
-Planning  -->[View the live project plan blueprint](https://htmlpreview.github.io/?https://raw.githubusercontent.com/Abhi-Gangurde/engineering-data-platform-cad-plm-erp/refs/heads/main/docs/html/Plan-->cad-plm-erp-architecture.html)
+Planning  -->[View the live project plan blueprint](https://htmlpreview.github.io/?https://raw.githubusercontent.com/Abhi-Gangurde/engineering-data-platform-cad-plm-erp/refs/heads/main/docs/html/Plan--cad-plm-erp-architecture.html)
 
-Execution -->[View the live project execution blueprint](https://htmlpreview.github.io/?https://raw.githubusercontent.com/Abhi-Gangurde/engineering-data-platform-cad-plm-erp/refs/heads/main/docs/html/Execution-->engdata-blueprint.html)
+Execution -->[View the live project execution blueprint](https://htmlpreview.github.io/?https://raw.githubusercontent.com/Abhi-Gangurde/engineering-data-platform-cad-plm-erp/refs/heads/main/docs/html/Execution--engdata-blueprint.html)
 # engineering-data-platform-cad-plm-erp
 End-to-End Data Engineering Platform using ADF, Databricks, and Delta Lake  integrating CAD, PLM, and ERP systems with CDC, incremental processing, and medallion architecture.
 
@@ -27,7 +27,7 @@ Engineering and manufacturing organizations generate data across multiple system
 * **PLM** → Bill of Materials (BOM), revisions
 * **ERP** → Cost, supplier, financial data
 
-<img src="docs/Sources.png" alt="Architecture " width=""/>
+<img src="docs/images/Sources.png" alt="Architecture " width=""/>
 
 👉 These systems are siloed, making it difficult to:
 
@@ -49,7 +49,7 @@ This project builds a **unified data platform** that:
 ---
 
 ##  Architecture
-<img src="docs/EntireDataFlow.png" alt="Architecture " width=""/>
+<img src="docs/images/EntireDataFlow.png" alt="Architecture " width=""/>
 
 ###  High-Level Flow
 
@@ -95,7 +95,7 @@ ERP (DB)   ──► ADF (Incremental Load)
 
 ##  Data Ingestion Strategy
 
-<img src="docs/Ingestion.png" alt="Architecture " width=""/>
+<img src="docs/images/Ingestion.png" alt="Architecture " width=""/>
 
 
 | Source | Method                       | Trigger             |
@@ -128,7 +128,7 @@ ERP (DB)   ──► ADF (Incremental Load)
   * Schema standardization
 * Prepares data for modeling
 
-<img src="docs/BronzeToSilver.png" alt="Architecture " width=""/>
+<img src="docs/images/BronzeToSilver.png" alt="Architecture " width=""/>
 
 ---
 
@@ -148,7 +148,7 @@ ERP (DB)   ──► ADF (Incremental Load)
 * `fact_cost`
 
 
-<img src="docs/SilverToGold.png" alt="Architecture " width=""/>
+<img src="docs/images/SilverToGold.png" alt="Architecture " width=""/>
 
 ---
 
@@ -161,7 +161,7 @@ ERP (DB)   ──► ADF (Incremental Load)
 * `PL_ERP_Incremental`
 * `PL_MASTER_PIPELINE`
 * 
-<img src="docs/ChildPipelines.png" alt="Architecture " width=""/>
+<img src="docs/images/ChildPipelines.png" alt="Architecture " width=""/>
 
 ---
 
@@ -172,7 +172,7 @@ ERP (DB)   ──► ADF (Incremental Load)
 * Triggers Databricks notebook
 * Updates execution status
 
-<img src="docs/MasterPipeline.png" alt="Architecture " width=""/>
+<img src="docs/images/MasterPipeline.png" alt="Architecture " width=""/>
 
 ---
 
