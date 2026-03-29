@@ -1,0 +1,265 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adf-engdata-dev"
+		},
+		"AzureDatabricks1_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks1'"
+		},
+		"ERP_Database_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ERP_Database'"
+		},
+		"LS_ADLS_CAD_Pipeline_Status_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_ADLS_CAD_Pipeline_Status'"
+		},
+		"LS_OnPremSQLServer_ERP_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_OnPremSQLServer_ERP'"
+		},
+		"LS_OnPrem_CAD_Metadata_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_OnPrem_CAD_Metadata'"
+		},
+		"LS_SQLServer_PLM_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_SQLServer_PLM'"
+		},
+		"PLM_Database_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'PLM_Database'"
+		},
+		"pipeline_metadata_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'pipeline_metadata'"
+		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0328-102928-to8odk7m"
+		},
+		"ERP_Database_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "servererpsqldb.database.windows.net"
+		},
+		"ERP_Database_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "SQL_DB_ERP_free-sql-db-9493379"
+		},
+		"ERP_Database_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "servererpsqldb "
+		},
+		"LS_ADLS_CAD_Pipeline_Status_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://stengdataplatformdev.dfs.core.windows.net/"
+		},
+		"LS_Git_Repo_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com/"
+		},
+		"LS_OnPremSQLServer_ERP_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "DESKTOP-HFG9J5N\\SQLEXPRESS"
+		},
+		"LS_OnPremSQLServer_ERP_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "ERP"
+		},
+		"LS_OnPremSQLServer_ERP_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "abhigangurd"
+		},
+		"LS_OnPrem_CAD_Metadata_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "C:\\Users\\DELL\\Documents\\Abhishek-Work\\DataEngineer\\DE_Projects\\CADPLMSYS\\engineering-data-platform-cad-plm-erp\\data\\cad"
+		},
+		"LS_OnPrem_CAD_Metadata_properties_typeProperties_userId": {
+			"type": "string",
+			"defaultValue": "abhigangurd"
+		},
+		"LS_SQLServer_PLM_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "DESKTOP-HFG9J5N\\SQLEXPRESS"
+		},
+		"LS_SQLServer_PLM_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "PLM"
+		},
+		"LS_SQLServer_PLM_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "abhigangurd"
+		},
+		"PLM_Database_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "servererpsqldb.database.windows.net"
+		},
+		"PLM_Database_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "SQL_DB_PLM"
+		},
+		"PLM_Database_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "servererpsqldb"
+		},
+		"StartPipelineStatus_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com/"
+		},
+		"pipeline_metadata_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "DESKTOP-HFG9J5N\\SQLEXPRESS"
+		},
+		"pipeline_metadata_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "pipeline_metadata"
+		},
+		"pipeline_metadata_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "abhigangurd"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "adf-engdata-dev_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureDatabricks1_accessToken": {
+						"value": "[parameters('AzureDatabricks1_accessToken')]"
+					},
+					"ERP_Database_password": {
+						"value": "[parameters('ERP_Database_password')]"
+					},
+					"LS_ADLS_CAD_Pipeline_Status_accountKey": {
+						"value": "[parameters('LS_ADLS_CAD_Pipeline_Status_accountKey')]"
+					},
+					"PLM_Database_password": {
+						"value": "[parameters('PLM_Database_password')]"
+					},
+					"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+						"value": "[parameters('AzureDatabricks1_properties_typeProperties_existingClusterId')]"
+					},
+					"ERP_Database_properties_typeProperties_server": {
+						"value": "[parameters('ERP_Database_properties_typeProperties_server')]"
+					},
+					"ERP_Database_properties_typeProperties_database": {
+						"value": "[parameters('ERP_Database_properties_typeProperties_database')]"
+					},
+					"ERP_Database_properties_typeProperties_userName": {
+						"value": "[parameters('ERP_Database_properties_typeProperties_userName')]"
+					},
+					"LS_ADLS_CAD_Pipeline_Status_properties_typeProperties_url": {
+						"value": "[parameters('LS_ADLS_CAD_Pipeline_Status_properties_typeProperties_url')]"
+					},
+					"LS_Git_Repo_properties_typeProperties_url": {
+						"value": "[parameters('LS_Git_Repo_properties_typeProperties_url')]"
+					},
+					"PLM_Database_properties_typeProperties_server": {
+						"value": "[parameters('PLM_Database_properties_typeProperties_server')]"
+					},
+					"PLM_Database_properties_typeProperties_database": {
+						"value": "[parameters('PLM_Database_properties_typeProperties_database')]"
+					},
+					"PLM_Database_properties_typeProperties_userName": {
+						"value": "[parameters('PLM_Database_properties_typeProperties_userName')]"
+					},
+					"StartPipelineStatus_properties_typeProperties_url": {
+						"value": "[parameters('StartPipelineStatus_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "adf-engdata-dev_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"LS_OnPremSQLServer_ERP_password": {
+						"value": "[parameters('LS_OnPremSQLServer_ERP_password')]"
+					},
+					"LS_OnPrem_CAD_Metadata_password": {
+						"value": "[parameters('LS_OnPrem_CAD_Metadata_password')]"
+					},
+					"LS_SQLServer_PLM_password": {
+						"value": "[parameters('LS_SQLServer_PLM_password')]"
+					},
+					"pipeline_metadata_password": {
+						"value": "[parameters('pipeline_metadata_password')]"
+					},
+					"LS_OnPremSQLServer_ERP_properties_typeProperties_server": {
+						"value": "[parameters('LS_OnPremSQLServer_ERP_properties_typeProperties_server')]"
+					},
+					"LS_OnPremSQLServer_ERP_properties_typeProperties_database": {
+						"value": "[parameters('LS_OnPremSQLServer_ERP_properties_typeProperties_database')]"
+					},
+					"LS_OnPremSQLServer_ERP_properties_typeProperties_userName": {
+						"value": "[parameters('LS_OnPremSQLServer_ERP_properties_typeProperties_userName')]"
+					},
+					"LS_OnPrem_CAD_Metadata_properties_typeProperties_host": {
+						"value": "[parameters('LS_OnPrem_CAD_Metadata_properties_typeProperties_host')]"
+					},
+					"LS_OnPrem_CAD_Metadata_properties_typeProperties_userId": {
+						"value": "[parameters('LS_OnPrem_CAD_Metadata_properties_typeProperties_userId')]"
+					},
+					"LS_SQLServer_PLM_properties_typeProperties_server": {
+						"value": "[parameters('LS_SQLServer_PLM_properties_typeProperties_server')]"
+					},
+					"LS_SQLServer_PLM_properties_typeProperties_database": {
+						"value": "[parameters('LS_SQLServer_PLM_properties_typeProperties_database')]"
+					},
+					"LS_SQLServer_PLM_properties_typeProperties_userName": {
+						"value": "[parameters('LS_SQLServer_PLM_properties_typeProperties_userName')]"
+					},
+					"pipeline_metadata_properties_typeProperties_server": {
+						"value": "[parameters('pipeline_metadata_properties_typeProperties_server')]"
+					},
+					"pipeline_metadata_properties_typeProperties_database": {
+						"value": "[parameters('pipeline_metadata_properties_typeProperties_database')]"
+					},
+					"pipeline_metadata_properties_typeProperties_userName": {
+						"value": "[parameters('pipeline_metadata_properties_typeProperties_userName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'adf-engdata-dev_ArmTemplate_0')]"
+			]
+		}
+	]
+}

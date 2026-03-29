@@ -1,0 +1,96 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-engdata-dev"
+		},
+		"AzureDatabricks1_accessToken": {
+			"value": ""
+		},
+		"ERP_Database_password": {
+			"value": ""
+		},
+		"LS_ADLS_CAD_Pipeline_Status_accountKey": {
+			"value": ""
+		},
+		"LS_OnPremSQLServer_ERP_password": {
+			"value": ""
+		},
+		"LS_OnPrem_CAD_Metadata_password": {
+			"value": ""
+		},
+		"LS_SQLServer_PLM_password": {
+			"value": ""
+		},
+		"PLM_Database_password": {
+			"value": ""
+		},
+		"pipeline_metadata_password": {
+			"value": ""
+		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"value": "0328-102928-to8odk7m"
+		},
+		"ERP_Database_properties_typeProperties_server": {
+			"value": "servererpsqldb.database.windows.net"
+		},
+		"ERP_Database_properties_typeProperties_database": {
+			"value": "SQL_DB_ERP_free-sql-db-9493379"
+		},
+		"ERP_Database_properties_typeProperties_userName": {
+			"value": "servererpsqldb "
+		},
+		"LS_ADLS_CAD_Pipeline_Status_properties_typeProperties_url": {
+			"value": "https://stengdataplatformdev.dfs.core.windows.net/"
+		},
+		"LS_Git_Repo_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
+		},
+		"LS_OnPremSQLServer_ERP_properties_typeProperties_server": {
+			"value": "DESKTOP-HFG9J5N\\SQLEXPRESS"
+		},
+		"LS_OnPremSQLServer_ERP_properties_typeProperties_database": {
+			"value": "ERP"
+		},
+		"LS_OnPremSQLServer_ERP_properties_typeProperties_userName": {
+			"value": "abhigangurd"
+		},
+		"LS_OnPrem_CAD_Metadata_properties_typeProperties_host": {
+			"value": "C:\\Users\\DELL\\Documents\\Abhishek-Work\\DataEngineer\\DE_Projects\\CADPLMSYS\\engineering-data-platform-cad-plm-erp\\data\\cad"
+		},
+		"LS_OnPrem_CAD_Metadata_properties_typeProperties_userId": {
+			"value": "abhigangurd"
+		},
+		"LS_SQLServer_PLM_properties_typeProperties_server": {
+			"value": "DESKTOP-HFG9J5N\\SQLEXPRESS"
+		},
+		"LS_SQLServer_PLM_properties_typeProperties_database": {
+			"value": "PLM"
+		},
+		"LS_SQLServer_PLM_properties_typeProperties_userName": {
+			"value": "abhigangurd"
+		},
+		"PLM_Database_properties_typeProperties_server": {
+			"value": "servererpsqldb.database.windows.net"
+		},
+		"PLM_Database_properties_typeProperties_database": {
+			"value": "SQL_DB_PLM"
+		},
+		"PLM_Database_properties_typeProperties_userName": {
+			"value": "servererpsqldb"
+		},
+		"StartPipelineStatus_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
+		},
+		"pipeline_metadata_properties_typeProperties_server": {
+			"value": "DESKTOP-HFG9J5N\\SQLEXPRESS"
+		},
+		"pipeline_metadata_properties_typeProperties_database": {
+			"value": "pipeline_metadata"
+		},
+		"pipeline_metadata_properties_typeProperties_userName": {
+			"value": "abhigangurd"
+		}
+	}
+}
