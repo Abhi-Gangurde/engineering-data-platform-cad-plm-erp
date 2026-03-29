@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semantic Data Model — Gold & Serving Layer | Data With Abhi</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0f1e3c; --navy-mid:#1a3260; --blue:#1e5fa8; --blue-l:#dbeafe;
+    --gold:#b45309; --gold-l:#fef9c3; --gold-m:#fde68a;
+    --fact:#7c3aed; --fact-l:#ede9fe; --fact-m:#ddd6fe;
+    --dim:#0d9488; --dim-l:#ccfbf1; --dim-m:#99f6e4;
+    --agg:#d97706; --agg-l:#fef3c7; --agg-m:#fcd34d;
+    --serve:#1e5fa8; --serve-l:#eff6ff; --serve-m:#bfdbfe;
+    --green:#059669; --green-l:#d1fae5;
+    --red:#dc2626; --red-l:#fee2e2;
+    --gray:#64748b; --border:#e2e8f0;
+    --bg:#f8fafc; --bg2:#f1f5f9; --white:#fff;
+    --text:#0f172a; --text2:#334155; --text3:#64748b;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+
+  /* Cover */
+  .cover{background:linear-gradient(135deg,#0f1e3c 0%,#1a3260 55%,#1e5fa8 100%);color:#fff;padding:72px 48px;text-align:center;position:relative;overflow:hidden}
+  .cover::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M20 20h20v20H20zM0 0h20v20H0z'/%3E%3C/g%3E%3C/svg%3E")}
+  .cover-brand{font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#00b4d8;font-weight:700;margin-bottom:20px}
+  .cover-title{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,48px);line-height:1.15;margin-bottom:12px}
+  .cover-title em{color:#fde68a;font-style:normal}
+  .cover-sub{font-size:16px;color:rgba(255,255,255,.65);max-width:560px;margin:0 auto 40px}
+  .cover-legend{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+  .legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.75)}
+  .legend-dot{width:14px;height:14px;border-radius:3px;flex-shrink:0}
+
+  /* Layout */
+  .layout{display:flex;min-height:100vh}
+  .sidebar{width:260px;min-width:260px;background:var(--navy);position:sticky;top:0;height:100vh;overflow-y:auto;padding:24px 0;scrollbar-width:thin;scrollbar-color:var(--blue) transparent}
+  .sb-brand{padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:12px}
+  .sb-brand-name{font-size:12px;font-weight:700;color:#00b4d8;letter-spacing:1px}
+  .sb-brand-doc{font-size:10px;color:rgba(255,255,255,.35);margin-top:2px}
+  .nav-sect{padding:10px 20px 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.3);font-weight:600}
+  .nav-link{display:flex;align-items:center;gap:8px;padding:7px 20px;font-size:12px;color:rgba(255,255,255,.6);text-decoration:none;border-left:3px solid transparent;transition:all .18s}
+  .nav-link:hover{color:#fff;background:rgba(255,255,255,.07);border-left-color:#00b4d8}
+  .nav-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+  .main{flex:1;overflow-x:hidden;max-width:calc(100% - 260px)}
+
+  /* Sections */
+  .section{padding:56px 56px 44px;border-bottom:1px solid var(--border)}
+  .section:last-child{border-bottom:none}
+  .sec-num{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:var(--blue);font-family:'JetBrains Mono',monospace}
+  .sec-title{font-size:clamp(20px,2.5vw,28px);font-weight:700;color:var(--navy);margin-top:6px;line-height:1.25}
+  .sec-desc{font-size:14px;color:var(--text3);margin-top:8px;max-width:680px}
+  h2{font-size:17px;font-weight:700;color:var(--navy);margin:36px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--bg2)}
+  h3{font-size:14px;font-weight:600;color:var(--navy-mid);margin:24px 0 10px}
+  p{margin-bottom:12px;color:var(--text2);font-size:14px}
+
+  /* Type badges */
+  .type-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+  .tb-fact{background:var(--fact-l);color:var(--fact)}
+  .tb-dim{background:var(--dim-l);color:var(--dim)}
+  .tb-agg{background:var(--agg-l);color:var(--agg)}
+  .tb-mart{background:var(--serve-l);color:var(--serve)}
+  .tb-api{background:var(--green-l);color:var(--green)}
+
+  /* Table entity cards */
+  .entity-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin:24px 0}
+  .entity-card{background:var(--white);border-radius:10px;overflow:hidden;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .ec-header{padding:14px 16px 12px;border-bottom:1px solid var(--border)}
+  .ec-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+  .ec-name{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--navy)}
+  .ec-schema{font-size:10px;color:var(--text3);margin-top:2px}
+  .ec-desc{font-size:12px;color:var(--text3);margin-top:4px}
+  .ec-body{padding:0}
+  .col-row{display:grid;grid-template-columns:20px 1fr 80px 60px;gap:0;padding:6px 14px;border-bottom:1px solid var(--bg2);align-items:start;font-size:12px}
+  .col-row:last-child{border-bottom:none}
+  .col-row:nth-child(even){background:var(--bg)}
+  .col-key{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+  .pk{color:var(--gold);font-weight:800}
+  .fk{color:var(--blue)}
+  .col-name{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text);word-break:break-word}
+  .col-name small{display:block;font-family:'Inter',sans-serif;font-size:10.5px;color:var(--text3);margin-top:1px;font-family:'Inter',sans-serif}
+  .col-type{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--fact);background:var(--fact-l);padding:2px 5px;border-radius:4px;white-space:nowrap;height:fit-content}
+  .col-null{font-size:10px;color:var(--text3);text-align:center}
+  .m-badge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+  .m-measure{background:#ede9fe;color:#5b21b6}
+  .m-derived{background:#fef3c7;color:#92400e}
+  .m-key{background:#ccfbf1;color:#065f46}
+
+  /* Diagram wrap */
+  .diagram{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:28px;margin:20px 0;overflow-x:auto}
+  .diagram-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:16px;display:flex;align-items:center;gap:6px}
+  .diagram-label::before{content:'';display:inline-block;width:3px;height:12px;background:var(--blue);border-radius:2px}
+
+  /* Relation table */
+  .rel-table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0}
+  .rel-table thead{background:var(--navy);color:#fff}
+  .rel-table thead th{padding:10px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+  .rel-table tbody tr:nth-child(even){background:var(--bg2)}
+  .rel-table tbody tr:hover{background:#dbeafe}
+  .rel-table td{padding:9px 14px;color:var(--text2);border-top:1px solid var(--border);vertical-align:top}
+  .rel-table td code{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg2);padding:1px 5px;border-radius:3px}
+
+  /* Callout */
+  .callout{padding:14px 18px;border-radius:8px;margin:18px 0;border-left:4px solid}
+  .callout-blue{background:#eff6ff;border-color:var(--blue)}
+  .callout-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+  .callout-blue .callout-title{color:var(--blue)}
+
+  /* Metrics box */
+  .metrics{display:flex;gap:16px;flex-wrap:wrap;margin:20px 0}
+  .metric-box{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:14px 18px;min-width:140px;border-top:3px solid}
+  .metric-val{font-size:22px;font-weight:700;color:var(--navy)}
+  .metric-label{font-size:11px;color:var(--text3);margin-top:2px}
+
+  /* Footer */
+  .doc-footer{background:var(--navy);color:rgba(255,255,255,.45);padding:24px 56px;font-size:11px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .doc-footer strong{color:#00b4d8}
+
+  @media(max-width:860px){.sidebar{display:none}.main{max-width:100%}.section{padding:32px 20px 28px}}
+  @media print{.sidebar{display:none}.main{max-width:100%}.section{padding:32px 40px 28px;break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<div class="cover">
+  <div class="cover-brand">Data With Abhi</div>
+  <h1 class="cover-title">Semantic Data Model<br><em>Gold & Serving Layer</em></h1>
+  <p class="cover-sub">Star schema design, entity relationships, column-level data dictionary, and business definitions for all fact, dimension, aggregate, and mart tables.</p>
+  <div class="cover-legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#7c3aed"></div>Fact table</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d9488"></div>Dimension table</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#d97706"></div>Aggregate table</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#1e5fa8"></div>Serving mart</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#059669"></div>API table</div>
+  </div>
+</div>
+
+<div class="layout">
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-brand-name">Data With Abhi</div>
+    <div class="sb-brand-doc">Semantic Data Model v1.0</div>
+  </div>
+  <div class="nav-sect">Overview</div>
+  <a class="nav-link" href="#s1"><div class="nav-dot" style="background:#64748b"></div>Model overview</a>
+  <a class="nav-link" href="#s2"><div class="nav-dot" style="background:#64748b"></div>Star schema diagram</a>
+  <a class="nav-link" href="#s3"><div class="nav-dot" style="background:#64748b"></div>Relationships</a>
+  <div class="nav-sect">Gold — Dimensions</div>
+  <a class="nav-link" href="#dim-part"><div class="nav-dot" style="background:#0d9488"></div>dim_part</a>
+  <a class="nav-link" href="#dim-supplier"><div class="nav-dot" style="background:#0d9488"></div>dim_supplier</a>
+  <div class="nav-sect">Gold — Fact</div>
+  <a class="nav-link" href="#fact-bom"><div class="nav-dot" style="background:#7c3aed"></div>fact_bom_cost</a>
+  <div class="nav-sect">Gold — Aggregates</div>
+  <a class="nav-link" href="#agg-asm"><div class="nav-dot" style="background:#d97706"></div>agg_assembly_cost</a>
+  <a class="nav-link" href="#agg-sup"><div class="nav-dot" style="background:#d97706"></div>agg_supplier_cost</a>
+  <a class="nav-link" href="#agg-rev"><div class="nav-dot" style="background:#d97706"></div>agg_part_revision_history</a>
+  <a class="nav-link" href="#agg-cad"><div class="nav-dot" style="background:#d97706"></div>agg_cad_activity</a>
+  <div class="nav-sect">Serving — Marts</div>
+  <a class="nav-link" href="#mart-asm"><div class="nav-dot" style="background:#1e5fa8"></div>mart_assembly_cost</a>
+  <a class="nav-link" href="#mart-sup"><div class="nav-dot" style="background:#1e5fa8"></div>mart_supplier_scorecard</a>
+  <a class="nav-link" href="#mart-rev"><div class="nav-dot" style="background:#1e5fa8"></div>mart_open_revisions</a>
+  <a class="nav-link" href="#api-lookup"><div class="nav-dot" style="background:#059669"></div>api_part_cost_lookup</a>
+  <div class="nav-sect">Reference</div>
+  <a class="nav-link" href="#business-glossary"><div class="nav-dot" style="background:#64748b"></div>Business glossary</a>
+  <a class="nav-link" href="#measure-catalog"><div class="nav-dot" style="background:#64748b"></div>Measure catalog</a>
+</nav>
+
+<main class="main">
+
+<!-- S1: Overview -->
+<section class="section" id="s1">
+  <div class="sec-num">Section 01</div>
+  <div class="sec-title">Model Overview</div>
+  <div class="sec-desc">High-level summary of all tables in the gold and serving layer — counts, grains, and layer assignments.</div>
+
+  <div class="metrics">
+    <div class="metric-box" style="border-top-color:#0d9488"><div class="metric-val">2</div><div class="metric-label">Dimension tables</div></div>
+    <div class="metric-box" style="border-top-color:#7c3aed"><div class="metric-val">1</div><div class="metric-label">Fact table</div></div>
+    <div class="metric-box" style="border-top-color:#d97706"><div class="metric-val">4</div><div class="metric-label">Aggregate tables</div></div>
+    <div class="metric-box" style="border-top-color:#1e5fa8"><div class="metric-val">3</div><div class="metric-label">Serving marts</div></div>
+    <div class="metric-box" style="border-top-color:#059669"><div class="metric-val">1</div><div class="metric-label">API table</div></div>
+    <div class="metric-box" style="border-top-color:#334155"><div class="metric-val">5</div><div class="metric-label">Serving views</div></div>
+  </div>
+
+  <h2>Table Inventory</h2>
+  <table class="rel-table">
+    <thead><tr><th>Table</th><th>Layer</th><th>Type</th><th>Grain</th><th>Primary consumer</th><th>Merge key</th></tr></thead>
+    <tbody>
+      <tr><td><code>dim_part</code></td><td>Gold</td><td><span class="type-badge tb-dim">Dimension</span></td><td>1 row per part_id</td><td>All fact/mart joins</td><td>part_id</td></tr>
+      <tr><td><code>dim_supplier</code></td><td>Gold</td><td><span class="type-badge tb-dim">Dimension</span></td><td>1 row per supplier_name</td><td>Procurement reports</td><td>supplier_name</td></tr>
+      <tr><td><code>fact_bom_cost</code></td><td>Gold</td><td><span class="type-badge tb-fact">Fact</span></td><td>1 row per assembly × part × supplier</td><td>Cost analysis, Power BI</td><td>assembly_id + part_id + supplier_name</td></tr>
+      <tr><td><code>agg_assembly_cost</code></td><td>Gold</td><td><span class="type-badge tb-agg">Aggregate</span></td><td>1 row per assembly_id</td><td>Assembly cost dashboard</td><td>assembly_id</td></tr>
+      <tr><td><code>agg_supplier_cost</code></td><td>Gold</td><td><span class="type-badge tb-agg">Aggregate</span></td><td>1 row per supplier_name</td><td>Procurement scorecard</td><td>supplier_name</td></tr>
+      <tr><td><code>agg_part_revision_history</code></td><td>Gold</td><td><span class="type-badge tb-agg">Aggregate</span></td><td>1 row per part_id × revision</td><td>PLM lifecycle tracking</td><td>part_id + revision</td></tr>
+      <tr><td><code>agg_cad_activity</code></td><td>Gold</td><td><span class="type-badge tb-agg">Aggregate</span></td><td>1 row per file_date</td><td>Pipeline health ops</td><td>file_date</td></tr>
+      <tr><td><code>mart_assembly_cost</code></td><td>Serving</td><td><span class="type-badge tb-mart">Mart</span></td><td>1 row per assembly × part × supplier</td><td>Power BI DirectQuery, Excel</td><td>assembly_id + part_id + supplier_name</td></tr>
+      <tr><td><code>mart_supplier_scorecard</code></td><td>Serving</td><td><span class="type-badge tb-mart">Mart</span></td><td>1 row per supplier_name</td><td>Procurement team reports</td><td>supplier_name</td></tr>
+      <tr><td><code>mart_open_revisions</code></td><td>Serving</td><td><span class="type-badge tb-mart">Mart</span></td><td>1 row per open part_id × revision</td><td>Engineering alerts</td><td>part_id + revision</td></tr>
+      <tr><td><code>api_part_cost_lookup</code></td><td>Serving</td><td><span class="type-badge tb-api">API</span></td><td>1 row per part_id</td><td>Application REST API</td><td>part_id</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- S2: Star Schema -->
+<section class="section" id="s2">
+  <div class="sec-num">Section 02</div>
+  <div class="sec-title">Star Schema Diagram</div>
+  <div class="sec-desc">The core star schema centred on <code>fact_bom_cost</code> with two dimension tables and four satellite aggregates.</div>
+
+  <div class="diagram">
+    <div class="diagram-label">Gold layer — star schema</div>
+    <svg width="100%" viewBox="0 0 780 560" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="fk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M1 1L9 5L1 9" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
+        </marker>
+        <marker id="fk-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M1 1L9 5L1 9" fill="none" stroke="#1e5fa8" stroke-width="1.5" stroke-linecap="round"/>
+        </marker>
+      </defs>
+
+      <!-- FACT — centre -->
+      <rect x="270" y="200" width="240" height="160" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+      <rect x="270" y="200" width="240" height="32" rx="10" fill="#7c3aed"/>
+      <rect x="270" y="220" width="240" height="12" rx="0" fill="#7c3aed"/>
+      <text x="390" y="221" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" font-family="Inter,sans-serif">FACT</text>
+      <text x="390" y="237" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="JetBrains Mono,monospace">fact_bom_cost</text>
+      <text x="282" y="256" font-size="10" fill="#5b21b6" font-family="JetBrains Mono,monospace">🔑 assembly_id (FK)</text>
+      <text x="282" y="272" font-size="10" fill="#5b21b6" font-family="JetBrains Mono,monospace">🔑 part_id (FK)</text>
+      <text x="282" y="288" font-size="10" fill="#5b21b6" font-family="JetBrains Mono,monospace">🔑 supplier_name (FK)</text>
+      <text x="282" y="304" font-size="10" fill="#7c3aed" font-family="JetBrains Mono,monospace">  quantity</text>
+      <text x="282" y="318" font-size="10" fill="#7c3aed" font-family="JetBrains Mono,monospace">  cost  ·  total_assembly_cost</text>
+      <text x="282" y="334" font-size="10" fill="#7c3aed" font-family="JetBrains Mono,monospace">  is_lowest_cost_supplier</text>
+      <text x="282" y="350" font-size="10" fill="#7c3aed" font-family="JetBrains Mono,monospace">  cost_vs_cheapest</text>
+
+      <!-- DIM PART — left -->
+      <rect x="30" y="170" width="210" height="170" rx="10" fill="#ccfbf1" stroke="#0d9488" stroke-width="2"/>
+      <rect x="30" y="170" width="210" height="32" rx="10" fill="#0d9488"/>
+      <rect x="30" y="190" width="210" height="12" rx="0" fill="#0d9488"/>
+      <text x="135" y="191" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" font-family="Inter,sans-serif">DIMENSION</text>
+      <text x="135" y="207" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="JetBrains Mono,monospace">dim_part</text>
+      <text x="42" y="226" font-size="10" fill="#065f46" font-family="JetBrains Mono,monospace">🗝 part_id (PK)</text>
+      <text x="42" y="242" font-size="10" fill="#0d9488" font-family="JetBrains Mono,monospace">  current_revision</text>
+      <text x="42" y="258" font-size="10" fill="#0d9488" font-family="JetBrains Mono,monospace">  current_status</text>
+      <text x="42" y="274" font-size="10" fill="#0d9488" font-family="JetBrains Mono,monospace">  total_revision_count</text>
+      <text x="42" y="290" font-size="10" fill="#0d9488" font-family="JetBrains Mono,monospace">  supplier_count</text>
+      <text x="42" y="306" font-size="10" fill="#0d9488" font-family="JetBrains Mono,monospace">  min_cost · max_cost</text>
+      <text x="42" y="322" font-size="10" fill="#0d9488" font-family="JetBrains Mono,monospace">  cost_spread</text>
+
+      <!-- DIM SUPPLIER — right -->
+      <rect x="540" y="170" width="220" height="170" rx="10" fill="#ccfbf1" stroke="#0d9488" stroke-width="2"/>
+      <rect x="540" y="170" width="220" height="32" rx="10" fill="#0d9488"/>
+      <rect x="540" y="190" width="220" height="12" rx="0" fill="#0d9488"/>
+      <text x="650" y="191" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" font-family="Inter,sans-serif">DIMENSION</text>
+      <text x="650" y="207" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="JetBrains Mono,monospace">dim_supplier</text>
+      <text x="552" y="226" font-size="10" fill="#065f46" font-family="JetBrains Mono,monospace">🗝 supplier_name (PK)</text>
+      <text x="552" y="242" font-size="10" fill="#0d9488" font-family="JetBrains Mono,monospace">  currency</text>
+      <text x="552" y="258" font-size="10" fill="#0d9488" font-family="JetBrains Mono,monospace">  parts_supplied</text>
+      <text x="552" y="274" font-size="10" fill="#0d9488" font-family="JetBrains Mono,monospace">  avg_unit_cost</text>
+      <text x="552" y="290" font-size="10" fill="#0d9488" font-family="JetBrains Mono,monospace">  total_listed_cost</text>
+      <text x="552" y="306" font-size="10" fill="#0d9488" font-family="JetBrains Mono,monospace">  last_price_update_at</text>
+      <text x="552" y="322" font-size="10" fill="#0d9488" font-family="JetBrains Mono,monospace">  is_multi_part_supplier</text>
+
+      <!-- AGG ASSEMBLY — bottom-left -->
+      <rect x="30" y="400" width="210" height="130" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+      <rect x="30" y="400" width="210" height="28" rx="10" fill="#d97706"/>
+      <rect x="30" y="416" width="210" height="12" rx="0" fill="#d97706"/>
+      <text x="135" y="429" text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="JetBrains Mono,monospace">agg_assembly_cost</text>
+      <text x="42" y="448" font-size="9.5" fill="#92400e" font-family="JetBrains Mono,monospace">🗝 assembly_id</text>
+      <text x="42" y="462" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  min_total_assembly_cost</text>
+      <text x="42" y="476" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  avg_total_assembly_cost</text>
+      <text x="42" y="490" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  total_parts_count</text>
+      <text x="42" y="504" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  cost_data_completeness</text>
+
+      <!-- AGG SUPPLIER — bottom-right -->
+      <rect x="540" y="400" width="220" height="130" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+      <rect x="540" y="400" width="220" height="28" rx="10" fill="#d97706"/>
+      <rect x="540" y="416" width="220" height="12" rx="0" fill="#d97706"/>
+      <text x="650" y="429" text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="JetBrains Mono,monospace">agg_supplier_cost</text>
+      <text x="552" y="448" font-size="9.5" fill="#92400e" font-family="JetBrains Mono,monospace">🗝 supplier_name</text>
+      <text x="552" y="462" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  spend_share_pct</text>
+      <text x="552" y="476" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  supplier_tier</text>
+      <text x="552" y="490" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  lowest_cost_spend</text>
+      <text x="552" y="504" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  assemblies_covered</text>
+
+      <!-- AGG REVISION — top-left -->
+      <rect x="30" y="20" width="210" height="120" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+      <rect x="30" y="20" width="210" height="28" rx="10" fill="#d97706"/>
+      <rect x="30" y="36" width="210" height="12" rx="0" fill="#d97706"/>
+      <text x="135" y="49" text-anchor="middle" font-size="9.5" font-weight="700" fill="#fff" font-family="JetBrains Mono,monospace">agg_part_revision_history</text>
+      <text x="42" y="68" font-size="9.5" fill="#92400e" font-family="JetBrains Mono,monospace">🗝 part_id · revision</text>
+      <text x="42" y="82" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  revision_stage</text>
+      <text x="42" y="96" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  revision_sequence</text>
+      <text x="42" y="110" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  days_to_next_revision</text>
+      <text x="42" y="124" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  is_current_revision</text>
+
+      <!-- AGG CAD — top-right -->
+      <rect x="540" y="20" width="220" height="120" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+      <rect x="540" y="20" width="220" height="28" rx="10" fill="#d97706"/>
+      <rect x="540" y="36" width="220" height="12" rx="0" fill="#d97706"/>
+      <text x="650" y="49" text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="JetBrains Mono,monospace">agg_cad_activity</text>
+      <text x="552" y="68" font-size="9.5" fill="#92400e" font-family="JetBrains Mono,monospace">🗝 file_date</text>
+      <text x="552" y="82" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  files_processed</text>
+      <text x="552" y="96" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  processing_lag_days</text>
+      <text x="552" y="110" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  lag_status</text>
+      <text x="552" y="124" font-size="9.5" fill="#b45309" font-family="JetBrains Mono,monospace">  health_status</text>
+
+      <!-- FK arrows: dim_part → fact (part_id) -->
+      <line x1="240" y1="255" x2="268" y2="268" stroke="#0d9488" stroke-width="1.5" marker-end="url(#fk-blue)" stroke-dasharray="5,3"/>
+      <text x="248" y="257" font-size="9" fill="#0d9488" font-family="Inter,sans-serif">part_id</text>
+
+      <!-- FK arrows: dim_supplier → fact (supplier_name) -->
+      <line x1="540" y1="268" x2="512" y2="272" stroke="#0d9488" stroke-width="1.5" marker-end="url(#fk-blue)" stroke-dasharray="5,3"/>
+      <text x="516" y="263" font-size="9" fill="#0d9488" font-family="Inter,sans-serif">supplier_name</text>
+
+      <!-- agg_assembly → fact (assembly_id) -->
+      <path d="M 135 400 Q 135 380 270 330" fill="none" stroke="#d97706" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#fk)"/>
+      <text x="160" y="373" font-size="9" fill="#d97706" font-family="Inter,sans-serif">assembly_id</text>
+
+      <!-- agg_supplier → fact (supplier_name) -->
+      <path d="M 650 400 Q 650 378 512 330" fill="none" stroke="#d97706" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#fk)"/>
+      <text x="558" y="373" font-size="9" fill="#d97706" font-family="Inter,sans-serif">supplier_name</text>
+
+      <!-- agg_revision → dim_part (part_id) -->
+      <path d="M 135 140 Q 135 155 135 168" fill="none" stroke="#d97706" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#fk)"/>
+      <text x="140" y="160" font-size="9" fill="#d97706" font-family="Inter,sans-serif">part_id</text>
+
+      <!-- Legend -->
+      <line x1="290" y1="530" x2="330" y2="530" stroke="#0d9488" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="336" y="534" font-size="9" fill="#64748b" font-family="Inter,sans-serif">FK join (dim)</text>
+      <line x1="430" y1="530" x2="470" y2="530" stroke="#d97706" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="476" y="534" font-size="9" fill="#64748b" font-family="Inter,sans-serif">Shared key (agg)</text>
+      <text x="188" y="534" font-size="9" fill="#5b21b6" font-family="Inter,sans-serif">🔑 FK  🗝 PK</text>
+    </svg>
+  </div>
+
+  <div class="diagram">
+    <div class="diagram-label">Serving layer — mart lineage from gold</div>
+    <svg width="100%" viewBox="0 0 780 220" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/>
+        </marker>
+      </defs>
+      <!-- Gold sources -->
+      <rect x="10" y="70" width="140" height="36" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1"/>
+      <text x="80" y="93" text-anchor="middle" font-size="10" font-weight="700" fill="#5b21b6" font-family="JetBrains Mono,monospace">fact_bom_cost</text>
+      <rect x="10" y="116" width="140" height="36" rx="6" fill="#ccfbf1" stroke="#0d9488" stroke-width="1"/>
+      <text x="80" y="139" text-anchor="middle" font-size="10" font-weight="700" fill="#065f46" font-family="JetBrains Mono,monospace">dim_part</text>
+      <rect x="10" y="162" width="140" height="36" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+      <text x="80" y="185" text-anchor="middle" font-size="10" font-weight="700" fill="#78350f" font-family="JetBrains Mono,monospace">agg_assembly_cost</text>
+      <rect x="10" y="24" width="140" height="36" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+      <text x="80" y="47" text-anchor="middle" font-size="10" font-weight="700" fill="#78350f" font-family="JetBrains Mono,monospace">agg_supplier_cost</text>
+      <!-- Arrows -->
+      <line x1="150" y1="88" x2="196" y2="118" stroke="#7c3aed" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr-g)"/>
+      <line x1="150" y1="134" x2="196" y2="126" stroke="#0d9488" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr-g)"/>
+      <line x1="150" y1="180" x2="196" y2="134" stroke="#d97706" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr-g)"/>
+      <line x1="150" y1="42" x2="506" y2="47" stroke="#d97706" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr-g)"/>
+      <line x1="150" y1="134" x2="506" y2="115" stroke="#0d9488" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr-g)"/>
+      <line x1="150" y1="134" x2="506" y2="165" stroke="#0d9488" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr-g)"/>
+      <!-- Mart boxes -->
+      <rect x="198" y="100" width="170" height="48" rx="8" fill="#eff6ff" stroke="#1e5fa8" stroke-width="1.5"/>
+      <text x="283" y="121" text-anchor="middle" font-size="10" font-weight="700" fill="#1e3a8a" font-family="Inter,sans-serif">MART</text>
+      <text x="283" y="138" text-anchor="middle" font-size="10" font-weight="700" fill="#1e3a8a" font-family="JetBrains Mono,monospace">mart_assembly_cost</text>
+      <rect x="508" y="30" width="170" height="48" rx="8" fill="#eff6ff" stroke="#1e5fa8" stroke-width="1.5"/>
+      <text x="593" y="51" text-anchor="middle" font-size="10" font-weight="700" fill="#1e3a8a" font-family="Inter,sans-serif">MART</text>
+      <text x="593" y="68" text-anchor="middle" font-size="10" font-weight="700" fill="#1e3a8a" font-family="JetBrains Mono,monospace">mart_supplier_scorecard</text>
+      <rect x="508" y="98" width="170" height="48" rx="8" fill="#eff6ff" stroke="#1e5fa8" stroke-width="1.5"/>
+      <text x="593" y="119" text-anchor="middle" font-size="10" font-weight="700" fill="#1e3a8a" font-family="Inter,sans-serif">MART</text>
+      <text x="593" y="136" text-anchor="middle" font-size="10" font-weight="700" fill="#1e3a8a" font-family="JetBrains Mono,monospace">mart_open_revisions</text>
+      <rect x="508" y="146" width="170" height="48" rx="8" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+      <text x="593" y="167" text-anchor="middle" font-size="10" font-weight="700" fill="#065f46" font-family="Inter,sans-serif">API</text>
+      <text x="593" y="184" text-anchor="middle" font-size="10" font-weight="700" fill="#065f46" font-family="JetBrains Mono,monospace">api_part_cost_lookup</text>
+      <!-- mart_assembly_cost → Power BI -->
+      <line x1="368" y1="124" x2="700" y2="124" stroke="#94a3b8" stroke-width="1" marker-end="url(#arr-g)"/>
+      <rect x="702" y="110" width="74" height="28" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="739" y="128" text-anchor="middle" font-size="9" fill="#475569" font-family="Inter,sans-serif">Power BI</text>
+    </svg>
+  </div>
+</section>
+
+<!-- S3: Relationships -->
+<section class="section" id="s3">
+  <div class="sec-num">Section 03</div>
+  <div class="sec-title">Relationships</div>
+  <div class="sec-desc">All FK/join relationships between tables, cardinality, and join type.</div>
+  <table class="rel-table">
+    <thead><tr><th>From table</th><th>From column</th><th>To table</th><th>To column</th><th>Cardinality</th><th>Join type</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>fact_bom_cost</code></td><td><code>part_id</code></td><td><code>dim_part</code></td><td><code>part_id</code></td><td>Many → One</td><td>LEFT JOIN</td><td>Enrich fact rows with current part revision and cost summary</td></tr>
+      <tr><td><code>fact_bom_cost</code></td><td><code>supplier_name</code></td><td><code>dim_supplier</code></td><td><code>supplier_name</code></td><td>Many → One</td><td>LEFT JOIN</td><td>Enrich fact rows with supplier tier, spend share, price freshness</td></tr>
+      <tr><td><code>agg_assembly_cost</code></td><td><code>assembly_id</code></td><td><code>fact_bom_cost</code></td><td><code>assembly_id</code></td><td>One → Many</td><td>Aggregated FROM</td><td>Rolls up fact BOM cost lines to assembly-level totals</td></tr>
+      <tr><td><code>agg_supplier_cost</code></td><td><code>supplier_name</code></td><td><code>fact_bom_cost</code></td><td><code>supplier_name</code></td><td>One → Many</td><td>Aggregated FROM</td><td>Rolls up fact BOM cost lines to supplier-level spend totals</td></tr>
+      <tr><td><code>agg_part_revision_history</code></td><td><code>part_id</code></td><td><code>dim_part</code></td><td><code>part_id</code></td><td>Many → One</td><td>Sourced from silver</td><td>Tracks full revision lifecycle; shares part_id with dim_part</td></tr>
+      <tr><td><code>mart_assembly_cost</code></td><td><code>part_id</code></td><td><code>dim_part</code></td><td><code>part_id</code></td><td>Denormalized</td><td>Pre-joined</td><td>Mart includes dim_part attributes — no join needed at query time</td></tr>
+      <tr><td><code>mart_supplier_scorecard</code></td><td><code>supplier_name</code></td><td><code>dim_supplier</code></td><td><code>supplier_name</code></td><td>Denormalized</td><td>Pre-joined</td><td>Mart includes dim_supplier attributes with added scorecard metrics</td></tr>
+      <tr><td><code>api_part_cost_lookup</code></td><td><code>part_id</code></td><td><code>dim_part</code></td><td><code>part_id</code></td><td>One → One</td><td>Pre-joined</td><td>One row per part with all cost and revision info collapsed for API</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- DIMENSIONS -->
+<section class="section" id="dim-part">
+  <div class="sec-num">Gold Layer — Dimension</div>
+  <div class="sec-title">dim_part <span class="type-badge tb-dim" style="vertical-align:middle;font-size:13px">Dimension</span></div>
+  <div class="sec-desc">One row per <code>part_id</code>. The central dimension for all cost and revision analysis. Carries the current active revision details and a summary of total revision count and supplier coverage.</div>
+
+  <div class="callout callout-blue">
+    <div class="callout-title">Business definition</div>
+    A part is a discrete engineering component identified by a unique <code>part_id</code>. At any point in time, a part has exactly one current revision (where <code>effective_to IS NULL</code>). This dimension always reflects the <strong>current state</strong> of the part — point-in-time history lives in <code>agg_part_revision_history</code>.
+  </div>
+
+  <h2>Columns</h2>
+  <div class="entity-card" style="max-width:100%">
+    <div class="ec-header">
+      <div class="ec-header-top"><span class="ec-name">dim_part</span><span class="type-badge tb-dim">Dimension</span></div>
+      <div class="ec-schema">eng_data_platform.gold_plm · Grain: 1 row per part_id · Merge key: part_id</div>
+    </div>
+    <div class="ec-body">
+      <div class="col-row" style="background:#f0fdf4;font-weight:700;font-size:11px;color:#64748b"><div></div><div>Column</div><div>Type</div><div>Nullable</div></div>
+      <div class="col-row"><div class="col-key pk">PK</div><div class="col-name">part_id<small>Unique part identifier from PLM system</small></div><div class="col-type" style="background:#d1fae5;color:#065f46">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">current_revision<small>Label of the currently active revision (effective_to IS NULL)</small></div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">current_status<small>PLM status of the active revision: Released, Draft, In Review, Obsolete</small></div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">current_effective_from<small>Date the current revision became effective</small></div><div class="col-type">TIMESTAMP</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">current_revision_age_days <span class="m-badge m-derived">derived</span><small>Days since current revision became effective. datediff(today, current_effective_from)</small></div><div class="col-type">INT</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">total_revision_count<small>Total number of revisions across all lifecycle stages for this part</small></div><div class="col-type">BIGINT</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">first_released_at<small>Timestamp of first-ever revision effective_from for this part</small></div><div class="col-type">TIMESTAMP</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">last_revision_change_at<small>Most recent last_modified across all revisions for this part</small></div><div class="col-type">TIMESTAMP</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">supplier_count <span class="m-badge m-measure">measure</span><small>Number of distinct suppliers providing a cost quote for this part</small></div><div class="col-type">BIGINT</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">min_cost <span class="m-badge m-measure">measure</span><small>Lowest unit cost across all suppliers for this part</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">max_cost <span class="m-badge m-measure">measure</span><small>Highest unit cost across all suppliers for this part</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">cost_spread <span class="m-badge m-derived">derived</span><small>max_cost − min_cost. Measures pricing variance across suppliers.</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">currency<small>ISO 4217 currency code for cost figures (INR, USD, EUR, GBP)</small></div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">has_multi_supplier <span class="m-badge m-derived">derived</span><small>True if supplier_count > 1. Flags parts with competitive sourcing options.</small></div><div class="col-type">BOOLEAN</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">_gold_run_date<small>Date this notebook run was executed — for data freshness tracking</small></div><div class="col-type">DATE</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">_gold_processed_at<small>UTC timestamp of the gold notebook run that wrote this row</small></div><div class="col-type">TIMESTAMP</div><div class="col-null">No</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="dim-supplier">
+  <div class="sec-num">Gold Layer — Dimension</div>
+  <div class="sec-title">dim_supplier <span class="type-badge tb-dim" style="vertical-align:middle;font-size:13px">Dimension</span></div>
+  <div class="sec-desc">One row per <code>supplier_name</code>. Aggregated from ERP cost data. Carries coverage count, total listed costs, and pricing statistics.</div>
+
+  <div class="entity-card" style="max-width:100%">
+    <div class="ec-header">
+      <div class="ec-header-top"><span class="ec-name">dim_supplier</span><span class="type-badge tb-dim">Dimension</span></div>
+      <div class="ec-schema">eng_data_platform.gold_plm · Grain: 1 row per supplier_name · Merge key: supplier_name</div>
+    </div>
+    <div class="ec-body">
+      <div class="col-row"><div class="col-key pk">PK</div><div class="col-name">supplier_name<small>Unique supplier identifier — UPPERCASED in Silver for consistency</small></div><div class="col-type" style="background:#d1fae5;color:#065f46">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">currency<small>Primary trading currency for this supplier (ISO 4217)</small></div><div class="col-type">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">parts_supplied <span class="m-badge m-measure">measure</span><small>Count of distinct parts this supplier provides a price for</small></div><div class="col-type">BIGINT</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">total_listed_cost <span class="m-badge m-measure">measure</span><small>Sum of all unit costs listed by this supplier across all parts</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">avg_cost_per_part <span class="m-badge m-measure">measure</span><small>Average unit cost across all parts this supplier prices</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">min_part_cost <span class="m-badge m-measure">measure</span><small>Lowest unit cost quoted by this supplier across all parts</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">max_part_cost <span class="m-badge m-measure">measure</span><small>Highest unit cost quoted by this supplier across all parts</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">last_price_update_at<small>Most recent last_updated timestamp across all parts for this supplier</small></div><div class="col-type">TIMESTAMP</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">is_multi_part_supplier <span class="m-badge m-derived">derived</span><small>True if parts_supplied > 1. Flags suppliers with broad catalogue coverage.</small></div><div class="col-type">BOOLEAN</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">_gold_run_date</div><div class="col-type">DATE</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">_gold_processed_at</div><div class="col-type">TIMESTAMP</div><div class="col-null">No</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FACT -->
+<section class="section" id="fact-bom">
+  <div class="sec-num">Gold Layer — Fact</div>
+  <div class="sec-title">fact_bom_cost <span class="type-badge tb-fact" style="vertical-align:middle;font-size:13px">Fact</span></div>
+  <div class="sec-desc">The core fact table. Grain: one row per <code>(assembly_id, part_id, supplier_name)</code>. Contains every cost measure and flag needed for BOM cost analysis. This is the table all downstream Power BI reports and marts derive from.</div>
+
+  <div class="callout callout-blue">
+    <div class="callout-title">Business definition</div>
+    A BOM cost fact row represents a single sourcing option: a specific part used in a specific assembly, priced by a specific supplier. The fact contains both the raw cost and derived comparison metrics (is it the cheapest option? how much more expensive than cheapest?). Aggregating this table drives all assembly cost and supplier spend analysis.
+  </div>
+
+  <div class="entity-card" style="max-width:100%">
+    <div class="ec-header">
+      <div class="ec-header-top"><span class="ec-name">fact_bom_cost</span><span class="type-badge tb-fact">Fact</span></div>
+      <div class="ec-schema">eng_data_platform.gold_plm · Grain: assembly × part × supplier · Partition: currency · Z-Order: assembly_id, part_id</div>
+    </div>
+    <div class="ec-body">
+      <div class="col-row"><div class="col-key fk">FK</div><div class="col-name">assembly_id <span class="m-badge m-key">key</span><small>Parent assembly identifier. Joins to agg_assembly_cost.</small></div><div class="col-type">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key fk">FK</div><div class="col-name">part_id <span class="m-badge m-key">key</span><small>Component part identifier. Joins to dim_part.</small></div><div class="col-type">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key fk">FK</div><div class="col-name">supplier_name <span class="m-badge m-key">key</span><small>Supplier providing the cost quote. Joins to dim_supplier.</small></div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">revision<small>Part revision label at time of ingestion</small></div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">status<small>PLM lifecycle status at time of ingestion</small></div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">quantity <span class="m-badge m-measure">measure</span><small>Number of this part in the assembly BOM</small></div><div class="col-type">INT</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">cost <span class="m-badge m-measure">measure</span><small>Unit cost from ERP for this part-supplier combination. Decimal(18,4).</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">currency<small>ISO 4217 code for the cost value</small></div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">total_assembly_cost <span class="m-badge m-derived">derived</span><small>cost × quantity. The extended cost for this BOM line item.</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">is_lowest_cost_supplier <span class="m-badge m-derived">derived</span><small>True if this supplier offers the lowest cost for this part. Formula: RANK() OVER (PARTITION BY part_id ORDER BY cost ASC) = 1</small></div><div class="col-type">BOOLEAN</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">cost_vs_cheapest <span class="m-badge m-derived">derived</span><small>cost − MIN(cost OVER part_id). How much more expensive vs cheapest option. 0 for cheapest supplier.</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">is_current_revision<small>True if the revision on this row is the currently active revision for the part</small></div><div class="col-type">BOOLEAN</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">has_active_revision<small>True if the part has at least one Released revision in silver.plm_revisions</small></div><div class="col-type">BOOLEAN</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">cost_data_available<small>True if an ERP cost exists for this part — False for BOM lines with no ERP coverage</small></div><div class="col-type">BOOLEAN</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">revision_data_available<small>True if PLM revision data exists for this part</small></div><div class="col-type">BOOLEAN</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">effective_from<small>Date this part revision became effective</small></div><div class="col-type">TIMESTAMP</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">effective_to<small>Date this revision was superseded. NULL = currently active.</small></div><div class="col-type">TIMESTAMP</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">_gold_run_date</div><div class="col-type">DATE</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">_gold_processed_at</div><div class="col-type">TIMESTAMP</div><div class="col-null">No</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- AGGREGATES -->
+<section class="section" id="agg-asm">
+  <div class="sec-num">Gold Layer — Aggregate</div>
+  <div class="sec-title">agg_assembly_cost <span class="type-badge tb-agg" style="vertical-align:middle;font-size:13px">Aggregate</span></div>
+  <div class="sec-desc">One row per <code>assembly_id</code>. Pre-rolled BOM cost totals. Answers: <em>"What does it cost to build assembly A2001?"</em></div>
+  <div class="entity-card" style="max-width:100%">
+    <div class="ec-header">
+      <div class="ec-header-top"><span class="ec-name">agg_assembly_cost</span><span class="type-badge tb-agg">Aggregate</span></div>
+      <div class="ec-schema">eng_data_platform.gold_plm · Grain: 1 row per assembly_id · Z-Order: assembly_id</div>
+    </div>
+    <div class="ec-body">
+      <div class="col-row"><div class="col-key pk">PK</div><div class="col-name">assembly_id<small>Unique assembly identifier</small></div><div class="col-type" style="background:#d1fae5;color:#065f46">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">min_total_assembly_cost <span class="m-badge m-measure">measure</span><small>Sum of lowest-cost-supplier line costs. Best-case build cost using cheapest sourcing.</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">avg_total_assembly_cost <span class="m-badge m-measure">measure</span><small>Sum of (avg cost across suppliers × qty) per part. Realistic planning estimate.</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">total_parts_count <span class="m-badge m-measure">measure</span><small>Total distinct parts in this assembly's BOM</small></div><div class="col-type">BIGINT</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">parts_with_cost <span class="m-badge m-measure">measure</span><small>Count of parts in this assembly that have an ERP cost quote</small></div><div class="col-type">BIGINT</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">parts_with_current_revision <span class="m-badge m-measure">measure</span><small>Count of parts in this assembly with a Released/active revision</small></div><div class="col-type">BIGINT</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">parts_coverage_pct <span class="m-badge m-derived">derived</span><small>parts_with_cost / total_parts_count × 100. % of BOM lines with cost data.</small></div><div class="col-type">DECIMAL(5,2)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">revision_coverage_pct <span class="m-badge m-derived">derived</span><small>parts_with_current_revision / total_parts_count × 100</small></div><div class="col-type">DECIMAL(5,2)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">cost_data_completeness <span class="m-badge m-derived">derived</span><small>Complete (100%), Mostly Complete (≥80%), Incomplete (&lt;80%)</small></div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">currency<small>Primary currency for cost figures</small></div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">_gold_run_date / _gold_processed_at</div><div class="col-type">DATE / TS</div><div class="col-null">No</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="agg-sup">
+  <div class="sec-num">Gold Layer — Aggregate</div>
+  <div class="sec-title">agg_supplier_cost <span class="type-badge tb-agg" style="vertical-align:middle;font-size:13px">Aggregate</span></div>
+  <div class="sec-desc">One row per <code>supplier_name</code>. Pre-computed spend share and tier classification. Answers: <em>"Which suppliers are strategic and how much of our BOM spend goes to each?"</em></div>
+  <div class="entity-card" style="max-width:100%">
+    <div class="ec-header">
+      <div class="ec-header-top"><span class="ec-name">agg_supplier_cost</span><span class="type-badge tb-agg">Aggregate</span></div>
+      <div class="ec-schema">eng_data_platform.gold_plm · Grain: 1 row per supplier_name · Z-Order: supplier_name</div>
+    </div>
+    <div class="ec-body">
+      <div class="col-row"><div class="col-key pk">PK</div><div class="col-name">supplier_name<small>Unique supplier identifier (UPPERCASED)</small></div><div class="col-type" style="background:#d1fae5;color:#065f46">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">currency</div><div class="col-type">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">parts_supplied <span class="m-badge m-measure">measure</span><small>Number of BOM line items this supplier provides a cost for</small></div><div class="col-type">BIGINT</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">assemblies_covered <span class="m-badge m-measure">measure</span><small>Count of distinct assemblies that include at least one part from this supplier</small></div><div class="col-type">BIGINT</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">total_extended_cost <span class="m-badge m-measure">measure</span><small>Sum of (cost × quantity) across all BOM lines for this supplier</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">avg_unit_cost <span class="m-badge m-measure">measure</span><small>Average unit cost across all parts this supplier prices</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">lowest_cost_spend <span class="m-badge m-measure">measure</span><small>Total extended cost counting only rows where this supplier is the lowest-cost option</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">spend_share_pct <span class="m-badge m-derived">derived</span><small>lowest_cost_spend / grand_total_platform_spend × 100. Supplier's share of optimistic BOM spend.</small></div><div class="col-type">DECIMAL(5,2)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">supplier_tier <span class="m-badge m-derived">derived</span><small>Strategic (spend_share_pct ≥ 30%), Preferred (≥ 10%), Tactical (below 10%)</small></div><div class="col-type">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">is_multi_part_supplier <span class="m-badge m-derived">derived</span><small>True if parts_supplied > 1</small></div><div class="col-type">BOOLEAN</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">_gold_run_date / _gold_processed_at</div><div class="col-type">DATE / TS</div><div class="col-null">No</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="agg-rev">
+  <div class="sec-num">Gold Layer — Aggregate</div>
+  <div class="sec-title">agg_part_revision_history <span class="type-badge tb-agg" style="vertical-align:middle;font-size:13px">Aggregate</span></div>
+  <div class="sec-desc">One row per <code>(part_id, revision)</code>. Full revision lifecycle including ordinal sequence, stage classification, and days-to-supersession. Answers: <em>"How long was revision R1 active before being replaced?"</em></div>
+  <div class="entity-card" style="max-width:100%">
+    <div class="ec-header">
+      <div class="ec-header-top"><span class="ec-name">agg_part_revision_history</span><span class="type-badge tb-agg">Aggregate</span></div>
+      <div class="ec-schema">eng_data_platform.gold_plm · Grain: part × revision · Partition: status · Z-Order: part_id</div>
+    </div>
+    <div class="ec-body">
+      <div class="col-row"><div class="col-key pk">PK</div><div class="col-name">part_id<small>Part identifier</small></div><div class="col-type" style="background:#d1fae5;color:#065f46">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key pk">PK</div><div class="col-name">revision<small>Revision label. Composite PK with part_id.</small></div><div class="col-type" style="background:#d1fae5;color:#065f46">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">status<small>PLM lifecycle status for this specific revision</small></div><div class="col-type">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">effective_from<small>Date this revision became effective</small></div><div class="col-type">TIMESTAMP</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">effective_to<small>Date this revision was superseded. NULL = currently active.</small></div><div class="col-type">TIMESTAMP</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">is_current_revision<small>True if effective_to IS NULL</small></div><div class="col-type">BOOLEAN</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">revision_sequence <span class="m-badge m-derived">derived</span><small>RANK() OVER (PARTITION BY part_id ORDER BY effective_from). 1 = first release.</small></div><div class="col-type">INT</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">revision_stage <span class="m-badge m-derived">derived</span><small>Initial Release (seq=1), Current (is_current=true), Superseded (all others)</small></div><div class="col-type">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">revision_duration_days <span class="m-badge m-measure">measure</span><small>Days this revision was active. For closed: datediff(effective_to, effective_from). For open: datediff(today, effective_from).</small></div><div class="col-type">INT</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">days_to_next_revision <span class="m-badge m-measure">measure</span><small>datediff(effective_to, effective_from) for closed revisions. NULL for current revision.</small></div><div class="col-type">INT</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">next_revision <span class="m-badge m-derived">derived</span><small>LEAD(revision) OVER (PARTITION BY part_id ORDER BY effective_from). The revision that superseded this one.</small></div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">last_modified<small>Timestamp of last PLM system change for this revision</small></div><div class="col-type">TIMESTAMP</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">_gold_run_date / _gold_processed_at</div><div class="col-type">DATE / TS</div><div class="col-null">No</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="agg-cad">
+  <div class="sec-num">Gold Layer — Aggregate</div>
+  <div class="sec-title">agg_cad_activity <span class="type-badge tb-agg" style="vertical-align:middle;font-size:13px">Aggregate</span></div>
+  <div class="sec-desc">One row per <code>file_date</code>. CAD file processing KPIs. Answers: <em>"Is the CAD ingestion pipeline healthy and processing files on time?"</em></div>
+  <div class="entity-card" style="max-width:100%">
+    <div class="ec-header">
+      <div class="ec-header-top"><span class="ec-name">agg_cad_activity</span><span class="type-badge tb-agg">Aggregate</span></div>
+      <div class="ec-schema">eng_data_platform.gold_plm · Grain: 1 row per file_date · Z-Order: file_date</div>
+    </div>
+    <div class="ec-body">
+      <div class="col-row"><div class="col-key pk">PK</div><div class="col-name">file_date<small>Date parsed from the CAD filename (cad_metadata_YYYY-MM-DD.csv)</small></div><div class="col-type" style="background:#d1fae5;color:#065f46">DATE</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">files_processed <span class="m-badge m-measure">measure</span><small>Total CAD files processed on this date</small></div><div class="col-type">BIGINT</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">unique_files <span class="m-badge m-measure">measure</span><small>Count of distinct file_id values processed on this date</small></div><div class="col-type">BIGINT</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">first_processed_at<small>Earliest _silver_processed_at timestamp on this file_date</small></div><div class="col-type">TIMESTAMP</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">last_processed_at<small>Latest _silver_processed_at timestamp on this file_date</small></div><div class="col-type">TIMESTAMP</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">processing_lag_days <span class="m-badge m-derived">derived</span><small>datediff(first_processed_at::date, file_date). How many days after the file date was it ingested?</small></div><div class="col-type">INT</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">lag_status <span class="m-badge m-derived">derived</span><small>Same Day (lag=0), Next Day (lag=1), Within 3 Days (lag≤3), Delayed (lag>3)</small></div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">_gold_run_date / _gold_processed_at</div><div class="col-type">DATE / TS</div><div class="col-null">No</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVING LAYER -->
+<section class="section" id="mart-asm">
+  <div class="sec-num">Serving Layer — Mart</div>
+  <div class="sec-title">mart_assembly_cost <span class="type-badge tb-mart" style="vertical-align:middle;font-size:13px">Mart</span></div>
+  <div class="sec-desc">Fully denormalised, BI-labelled flat table. Same grain as <code>fact_bom_cost</code> but enriched with <code>dim_part</code> and <code>agg_assembly_cost</code> columns. No joins needed at query time — Power BI and Excel can use it directly.</div>
+  <div class="entity-card" style="max-width:100%">
+    <div class="ec-header">
+      <div class="ec-header-top"><span class="ec-name">mart_assembly_cost</span><span class="type-badge tb-mart">Mart</span></div>
+      <div class="ec-schema">eng_data_platform.serving_plm · Grain: assembly × part × supplier · Partition: currency · Z-Order: assembly_id, part_id</div>
+    </div>
+    <div class="ec-body">
+      <div class="col-row"><div class="col-key pk">PK</div><div class="col-name">assembly_id</div><div class="col-type" style="background:#d1fae5;color:#065f46">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key pk">PK</div><div class="col-name">part_id</div><div class="col-type" style="background:#d1fae5;color:#065f46">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key pk">PK</div><div class="col-name">supplier_name</div><div class="col-type" style="background:#d1fae5;color:#065f46">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">part_revision · part_status</div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">quantity <span class="m-badge m-measure">measure</span></div><div class="col-type">INT</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">unit_cost <span class="m-badge m-measure">measure</span></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">currency</div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">line_cost <span class="m-badge m-measure">measure</span><small>unit_cost × quantity (total_assembly_cost renamed for BI clarity)</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">is_cheapest_supplier <span class="m-badge m-derived">derived</span></div><div class="col-type">BOOLEAN</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">cost_premium_inr <span class="m-badge m-derived">derived</span><small>cost_vs_cheapest renamed with currency suffix for BI clarity</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">assembly_min_cost <span class="m-badge m-measure">measure</span><small>From agg_assembly_cost.min_total_assembly_cost — pre-joined</small></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">assembly_avg_cost <span class="m-badge m-measure">measure</span></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">assembly_total_parts · assembly_cost_coverage_pct · assembly_data_completeness<small>From agg_assembly_cost — pre-joined</small></div><div class="col-type">BIGINT / DECIMAL / STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">part_revision_count · part_first_released_at<small>From dim_part — pre-joined</small></div><div class="col-type">BIGINT / TIMESTAMP</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">is_current_revision · has_active_revision · has_erp_cost</div><div class="col-type">BOOLEAN</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">report_date<small>Date column for Power BI date slicer</small></div><div class="col-type">DATE</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">_refreshed_at<small>UTC timestamp when this mart was last materialised</small></div><div class="col-type">TIMESTAMP</div><div class="col-null">No</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="mart-sup">
+  <div class="sec-num">Serving Layer — Mart</div>
+  <div class="sec-title">mart_supplier_scorecard <span class="type-badge tb-mart" style="vertical-align:middle;font-size:13px">Mart</span></div>
+  <div class="sec-desc">One row per <code>supplier_name</code>. Extends <code>agg_supplier_cost</code> with freshness analysis, recommended action, and days-since-price-update for procurement reviews.</div>
+  <div class="entity-card" style="max-width:100%">
+    <div class="ec-header">
+      <div class="ec-header-top"><span class="ec-name">mart_supplier_scorecard</span><span class="type-badge tb-mart">Mart</span></div>
+      <div class="ec-schema">eng_data_platform.serving_plm · Grain: 1 row per supplier_name · Z-Order: supplier_name</div>
+    </div>
+    <div class="ec-body">
+      <div class="col-row"><div class="col-key pk">PK</div><div class="col-name">supplier_name</div><div class="col-type" style="background:#d1fae5;color:#065f46">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">currency · parts_supplied · assemblies_covered</div><div class="col-type">mixed</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">avg_unit_cost · min_unit_cost · max_unit_cost · total_extended_cost · lowest_cost_spend <span class="m-badge m-measure">measure</span></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">spend_share_pct · supplier_tier <span class="m-badge m-derived">derived</span></div><div class="col-type">DECIMAL / STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">last_price_update_at<small>From dim_supplier — pre-joined</small></div><div class="col-type">TIMESTAMP</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">days_since_price_update <span class="m-badge m-derived">derived</span><small>datediff(current_date, last_price_update_at). Freshness indicator.</small></div><div class="col-type">INT</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">price_freshness <span class="m-badge m-derived">derived</span><small>Current (≤30 days), Stale (≤90 days), Outdated (>90 days)</small></div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">recommended_action <span class="m-badge m-derived">derived</span><small>Maintain / Urgent renegotiate / Review consolidation / Monitor — based on tier × freshness logic</small></div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">is_multi_part_supplier · report_date · _refreshed_at</div><div class="col-type">mixed</div><div class="col-null">No</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="mart-rev">
+  <div class="sec-num">Serving Layer — Mart</div>
+  <div class="sec-title">mart_open_revisions <span class="type-badge tb-mart" style="vertical-align:middle;font-size:13px">Mart</span></div>
+  <div class="sec-desc">Filtered view of <code>agg_part_revision_history</code> — only currently active revisions. Adds governance threshold flags (review due, escalation due) for engineering alert workflows.</div>
+  <div class="entity-card" style="max-width:100%">
+    <div class="ec-header">
+      <div class="ec-header-top"><span class="ec-name">mart_open_revisions</span><span class="type-badge tb-mart">Mart</span></div>
+      <div class="ec-schema">eng_data_platform.serving_plm · Filter: is_current_revision = true · Z-Order: part_id, review_status</div>
+    </div>
+    <div class="ec-body">
+      <div class="col-row"><div class="col-key pk">PK</div><div class="col-name">part_id</div><div class="col-type" style="background:#d1fae5;color:#065f46">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key pk">PK</div><div class="col-name">revision</div><div class="col-type" style="background:#d1fae5;color:#065f46">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">status · effective_from · revision_sequence</div><div class="col-type">mixed</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">days_active <span class="m-badge m-measure">measure</span><small>revision_duration_days renamed for clarity. How long this revision has been active.</small></div><div class="col-type">INT</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">days_until_review_due <span class="m-badge m-derived">derived</span><small>MAX(0, REVIEW_THRESHOLD_DAYS − days_active). Default threshold: 180 days.</small></div><div class="col-type">INT</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">review_status <span class="m-badge m-derived">derived</span><small>On Track (days_active &lt; 180), Review (≥180), Escalate (≥365)</small></div><div class="col-type">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">supplier_count · current_min_cost · currency<small>From dim_part — pre-joined</small></div><div class="col-type">mixed</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">has_cost_data <span class="m-badge m-derived">derived</span><small>True if current_min_cost IS NOT NULL</small></div><div class="col-type">BOOLEAN</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">report_date · _refreshed_at</div><div class="col-type">DATE / TS</div><div class="col-null">No</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="api-lookup">
+  <div class="sec-num">Serving Layer — API</div>
+  <div class="sec-title">api_part_cost_lookup <span class="type-badge tb-api" style="vertical-align:middle;font-size:13px">API</span></div>
+  <div class="sec-desc">One row per <code>part_id</code>. Optimised for application point lookups. Contains a pre-serialised JSON column (<code>api_response_json</code>) that the REST API layer can return directly without transformation.</div>
+  <div class="entity-card" style="max-width:100%">
+    <div class="ec-header">
+      <div class="ec-header-top"><span class="ec-name">api_part_cost_lookup</span><span class="type-badge tb-api">API Table</span></div>
+      <div class="ec-schema">eng_data_platform.serving_plm · Grain: 1 row per part_id · Z-Order: part_id (sub-second point lookups)</div>
+    </div>
+    <div class="ec-body">
+      <div class="col-row"><div class="col-key pk">PK</div><div class="col-name">part_id</div><div class="col-type" style="background:#d1fae5;color:#065f46">STRING</div><div class="col-null">No</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">current_revision · current_status</div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">is_available <span class="m-badge m-derived">derived</span><small>True if current_status = 'Released'. Used by application to gate part selection.</small></div><div class="col-type">BOOLEAN</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">cheapest_supplier<small>supplier_name of the lowest-cost option for this part</small></div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">cheapest_unit_cost <span class="m-badge m-measure">measure</span></div><div class="col-type">DECIMAL(18,4)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">cost_currency</div><div class="col-type">STRING</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">all_suppliers <span class="m-badge m-derived">derived</span><small>ARRAY of structs: [{supplier, unit_cost, currency}]. collect_list() over part_id.</small></div><div class="col-type">ARRAY&lt;STRUCT&gt;</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">api_response_json <span class="m-badge m-derived">derived</span><small>to_json(struct(part_id, current_revision, is_available, cheapest_supplier, all_suppliers)). Pre-serialised for zero-transform REST response.</small></div><div class="col-type">STRING (JSON)</div><div class="col-null">Yes</div></div>
+      <div class="col-row"><div class="col-key"></div><div class="col-name">cache_refreshed_at<small>UTC timestamp of last mart materialisation — for API cache invalidation logic</small></div><div class="col-type">TIMESTAMP</div><div class="col-null">No</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Business Glossary -->
+<section class="section" id="business-glossary">
+  <div class="sec-num">Reference</div>
+  <div class="sec-title">Business Glossary</div>
+  <div class="sec-desc">Definitions for all business terms used in the semantic model.</div>
+  <table class="rel-table">
+    <thead><tr><th>Term</th><th>Definition</th><th>Used in</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Part</strong></td><td>A discrete engineering component identified by a unique part_id in the PLM system</td><td>All tables</td></tr>
+      <tr><td><strong>Revision</strong></td><td>A specific version of a part at a point in time. Parts have multiple revisions over their lifecycle. Only one revision is current (effective_to IS NULL) at any time.</td><td>plm_revisions, agg_part_revision_history</td></tr>
+      <tr><td><strong>Assembly</strong></td><td>A product made up of multiple component parts. An assembly_id groups BOM line items.</td><td>plm_bom, fact_bom_cost, agg_assembly_cost</td></tr>
+      <tr><td><strong>BOM (Bill of Materials)</strong></td><td>The list of all parts and their quantities required to build a specific assembly</td><td>fact_bom_cost, mart_assembly_cost</td></tr>
+      <tr><td><strong>Extended cost / Line cost</strong></td><td>unit_cost × quantity. The total cost contribution of one BOM line item to the assembly cost.</td><td>fact_bom_cost, mart_assembly_cost</td></tr>
+      <tr><td><strong>Lowest-cost supplier</strong></td><td>The supplier offering the cheapest unit cost for a given part. Identified by RANK()=1 partitioned by part_id.</td><td>fact_bom_cost, mart_assembly_cost</td></tr>
+      <tr><td><strong>Min total assembly cost</strong></td><td>Best-case assembly build cost — calculated using the cheapest supplier for every part in the BOM.</td><td>agg_assembly_cost, mart_assembly_cost</td></tr>
+      <tr><td><strong>Avg total assembly cost</strong></td><td>Planning estimate — uses average cost across all suppliers per part, multiplied by BOM quantity.</td><td>agg_assembly_cost, mart_assembly_cost</td></tr>
+      <tr><td><strong>Cost premium</strong></td><td>cost_vs_cheapest. How much more expensive a supplier's price is compared to the cheapest alternative for the same part. Zero for the cheapest supplier.</td><td>fact_bom_cost, mart_assembly_cost</td></tr>
+      <tr><td><strong>Supplier tier</strong></td><td>Strategic (≥30% spend share), Preferred (≥10%), Tactical (&lt;10%). Drives procurement relationship prioritisation.</td><td>agg_supplier_cost, mart_supplier_scorecard</td></tr>
+      <tr><td><strong>Spend share %</strong></td><td>A supplier's lowest_cost_spend as a percentage of total platform optimistic BOM spend.</td><td>agg_supplier_cost, mart_supplier_scorecard</td></tr>
+      <tr><td><strong>Price freshness</strong></td><td>How recently a supplier's prices were updated. Current (≤30 days), Stale (≤90 days), Outdated (&gt;90 days).</td><td>mart_supplier_scorecard</td></tr>
+      <tr><td><strong>Revision stage</strong></td><td>Initial Release (first-ever revision, sequence=1), Current (active today), Superseded (replaced by a newer revision).</td><td>agg_part_revision_history, mart_open_revisions</td></tr>
+      <tr><td><strong>Review status</strong></td><td>On Track (active &lt;180 days), Review (≥180 days active), Escalate (≥365 days active). Based on PLM governance thresholds.</td><td>mart_open_revisions</td></tr>
+      <tr><td><strong>Cost data completeness</strong></td><td>Complete (100% of BOM parts have ERP cost), Mostly Complete (≥80%), Incomplete (&lt;80%). Measures ERP/PLM integration coverage.</td><td>agg_assembly_cost, mart_assembly_cost</td></tr>
+      <tr><td><strong>Processing lag</strong></td><td>Days between a CAD file's export date (in the filename) and when it was ingested into the platform.</td><td>agg_cad_activity</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- Measure Catalog -->
+<section class="section" id="measure-catalog">
+  <div class="sec-num">Reference</div>
+  <div class="sec-title">Measure Catalog</div>
+  <div class="sec-desc">All quantitative measures and derived columns with their formulas and aggregation behaviour.</div>
+  <table class="rel-table">
+    <thead><tr><th>Measure</th><th>Table</th><th>Formula</th><th>Type</th><th>Aggregation</th></tr></thead>
+    <tbody>
+      <tr><td><code>quantity</code></td><td>fact_bom_cost</td><td>Source: plm_bom.quantity</td><td><span class="m-badge m-measure">measure</span></td><td>SUM</td></tr>
+      <tr><td><code>cost</code></td><td>fact_bom_cost</td><td>Source: erp_cost.cost (DECIMAL 18,4)</td><td><span class="m-badge m-measure">measure</span></td><td>AVG, MIN, MAX</td></tr>
+      <tr><td><code>total_assembly_cost</code></td><td>fact_bom_cost</td><td>cost × quantity</td><td><span class="m-badge m-derived">derived</span></td><td>SUM</td></tr>
+      <tr><td><code>is_lowest_cost_supplier</code></td><td>fact_bom_cost</td><td>RANK() OVER (PARTITION BY part_id ORDER BY cost ASC) = 1</td><td><span class="m-badge m-derived">derived</span></td><td>FILTER only</td></tr>
+      <tr><td><code>cost_vs_cheapest</code></td><td>fact_bom_cost</td><td>cost − MIN(cost) OVER (PARTITION BY part_id)</td><td><span class="m-badge m-derived">derived</span></td><td>AVG, MAX</td></tr>
+      <tr><td><code>min_total_assembly_cost</code></td><td>agg_assembly_cost</td><td>SUM(total_assembly_cost) WHERE is_lowest_cost_supplier = true, grouped by assembly_id</td><td><span class="m-badge m-measure">measure</span></td><td>Pre-aggregated</td></tr>
+      <tr><td><code>avg_total_assembly_cost</code></td><td>agg_assembly_cost</td><td>SUM(AVG(cost) × qty per part) grouped by assembly_id</td><td><span class="m-badge m-measure">measure</span></td><td>Pre-aggregated</td></tr>
+      <tr><td><code>parts_coverage_pct</code></td><td>agg_assembly_cost</td><td>parts_with_cost / total_parts_count × 100</td><td><span class="m-badge m-derived">derived</span></td><td>Pre-aggregated</td></tr>
+      <tr><td><code>spend_share_pct</code></td><td>agg_supplier_cost</td><td>lowest_cost_spend / grand_total_platform_spend × 100</td><td><span class="m-badge m-derived">derived</span></td><td>Pre-aggregated</td></tr>
+      <tr><td><code>revision_duration_days</code></td><td>agg_part_revision_history</td><td>CASE WHEN effective_to IS NOT NULL THEN datediff(effective_to, effective_from) ELSE datediff(today, effective_from) END</td><td><span class="m-badge m-measure">measure</span></td><td>AVG, MAX</td></tr>
+      <tr><td><code>days_to_next_revision</code></td><td>agg_part_revision_history</td><td>datediff(effective_to, effective_from) — NULL for open revisions</td><td><span class="m-badge m-measure">measure</span></td><td>AVG</td></tr>
+      <tr><td><code>cost_spread</code></td><td>dim_part</td><td>max_cost − min_cost across all suppliers for this part</td><td><span class="m-badge m-derived">derived</span></td><td>Non-additive</td></tr>
+      <tr><td><code>days_since_price_update</code></td><td>mart_supplier_scorecard</td><td>datediff(current_date, last_price_update_at)</td><td><span class="m-badge m-derived">derived</span></td><td>Non-additive</td></tr>
+      <tr><td><code>days_until_review_due</code></td><td>mart_open_revisions</td><td>MAX(0, 180 − days_active)</td><td><span class="m-badge m-derived">derived</span></td><td>Non-additive</td></tr>
+      <tr><td><code>processing_lag_days</code></td><td>agg_cad_activity</td><td>datediff(first_processed_at::date, file_date)</td><td><span class="m-badge m-derived">derived</span></td><td>AVG</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer class="doc-footer">
+  <div>Prepared by <strong>Data With Abhi</strong> · Semantic Data Model v1.0 · March 2026</div>
+  <div>eng_data_platform · gold_plm · serving_plm · Unity Catalog</div>
+</footer>
+</main>
+</div>
+</body>
+</html>
