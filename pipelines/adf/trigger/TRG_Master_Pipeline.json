@@ -2,7 +2,7 @@
 	"name": "TRG_Master_Pipeline",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Started",
+		"runtimeState": "Stopped",
 		"pipelines": [
 			{
 				"pipelineReference": {
