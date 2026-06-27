@@ -274,7 +274,7 @@ Created optimized tables for BI:
 
 ---
 
-##  Testing (SDET Advantage )
+##  Testing 
 
 * Data validation scripts
 * Automated checks using PyTest
